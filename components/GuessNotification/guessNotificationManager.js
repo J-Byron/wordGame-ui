@@ -1,6 +1,6 @@
 import { useState, createContext } from "react";
 
-const NotificationContext = createContext({
+const GuessNotificationContext = createContext({
   notificationState: null,
   notificationText: null,
   success: () => {},
@@ -12,7 +12,7 @@ const STATES = {
   ERROR: "ERROR",
 };
 
-const NotificationProvider = (props) => {
+const GuessNotificationProvider = (props) => {
   const [notificationState, setNotificationState] = useState(null);
   const [notificationText, setNotificationText] = useState(null);
 
@@ -32,7 +32,7 @@ const NotificationProvider = (props) => {
   };
 
   return (
-    <NotificationContext.Provider
+    <GuessNotificationContext.Provider
       value={{
         success,
         error,
@@ -42,9 +42,9 @@ const NotificationProvider = (props) => {
       }}
     >
       {props.children}
-    </NotificationContext.Provider>
+    </GuessNotificationContext.Provider>
   );
 };
 
-export { NotificationProvider };
-export default NotificationContext;
+export { GuessNotificationProvider };
+export default GuessNotificationContext;

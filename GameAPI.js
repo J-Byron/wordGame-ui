@@ -1,48 +1,67 @@
 import axios from "axios";
 
+const RESPONSE_MESSAGE = {
+  success: "success",
+  incorrectGuess: "incorrect guess",
+};
+
 const baseAPI = axios.create({
   baseURL: "https://flash-crawler-400019.ue.r.appspot.com",
 });
 
 const errorHandler = (error) => {
-  const statusCode = error.response?.status;
+  const { status: statusCode } = error?.response;
 
-  if (statusCode && statusCode !== 401) {
-    console.error(error);
-  } else {
+  if (statusCode && statusCode !== 400) {
+    console.error("Uncaught error", error);
   }
 
   return Promise.reject(error);
 };
 
-baseAPI.interceptors.response.use(undefined, (error) => {
-  return errorHandler(error);
-});
+baseAPI.interceptors.response.use(
+  (response) => {
+    const message = response.data?.message;
+    switch (message) {
+      case RESPONSE_MESSAGE.incorrectGuess:
+        const word = response.data?.word;
+        return Promise.reject({
+          reason: RESPONSE_MESSAGE.incorrectGuess,
+          word,
+        });
+      default:
+        return response;
+    }
+  },
+  (error) => {
+    return errorHandler(error);
+  }
+);
 
 export const GameAPI = {
   /**
-   * Fetchs an array of Dates (MMDDYYYY) as strings.
+   * Fetchs an array of games as strings.
    * @returns {Promise<string[]>} - A promise that resolves to an array of strings.
    */
 
-  getGameDates: async () => {
+  getGames: async () => {
     const { data } = await baseAPI.request({
-      url: `/game-dates/`,
+      url: `/game-numbers/`,
       method: "GET",
     });
     return data;
   },
 
   /**
-   * Get the position of a word for a specific date.
+   * Get the position of a word for a specific gameNumber.
    * @param {string} word - The word for which you want to retrieve the position.
-   * @param {string} date - The date for which you want to retrieve the word's position.
+   * @param {string} date - The gameNumber for which you want to retrieve the word's position.
    * @returns {Promise<{ word: string, pos: number }>} A promise that resolves to an object
    */
 
-  getWordPosForDate: async (word, date) => {
+  getWordPosForGame: async (word, gameNumber) => {
     const { data } = await baseAPI.request({
-      url: `/day/${date}/word/${word}`,
+      url: `/gameNumber/${gameNumber}/word/${word}`,
       method: "GET",
     });
 
@@ -56,7 +75,7 @@ export const GameAPI = {
 
   getMysteryToken: async () => {
     const { data } = await baseAPI.request({
-      url: `/mystery-date/token`,
+      url: `/mystery-game-number/token`,
       method: "GET",
     });
     return data;
@@ -73,7 +92,7 @@ export const GameAPI = {
 
   getWordPosForMysteryDate: async (word, token) => {
     const { data } = await baseAPI.request({
-      url: `/mystery-date/word/${word}`,
+      url: `/mystery-game-number/word/${word}`,
       method: "GET",
       Headers: {
         "X-Access-Token": token,

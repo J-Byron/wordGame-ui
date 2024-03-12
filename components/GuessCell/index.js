@@ -3,14 +3,16 @@ import useMeasure from "react-use-measure";
 import { useSpring, animated } from "@react-spring/web";
 
 const GuessCell = ({ guess }) => {
+  if (guess == null) return null;
+
   const { word, pos } = guess;
 
   const [didMount, toggle] = useState(false);
   const [ref, { width }] = useMeasure();
 
-  //   $color-red: #FF106B;
-  // $color-green: #04ECA3;
-  // $color-yellow: #FFD900;
+  //   $color-red: #FF4F79;
+  // $color-green: #12CC91;
+  // $color-yellow: #EDCD1D;
 
   // Function to calculate width percentage based on distance
   const calculateWidthAndColor = () => {
@@ -21,19 +23,19 @@ const GuessCell = ({ guess }) => {
       // RED
       return {
         width: didMount ? width * 0.05 : 0,
-        backgroundColor: "#FF106B",
+        backgroundColor: "#FF4F79",
       };
     } else if (pos < 2000 && pos >= 200) {
       // YELLOW
       return {
         width: didMount ? width * Math.max(percentage, 0.05) : 0,
-        backgroundColor: didMount ? "#FFD900" : "#FF106B",
+        backgroundColor: didMount ? "#EDCD1D" : "#FF4F79",
       };
     } else {
       // GREEN
       return {
         width: didMount ? width * Math.max(percentage, 0.05) : 0,
-        backgroundColor: didMount ? "#04ECA3" : "#FF106B",
+        backgroundColor: didMount ? "#12CC91" : "#FF4F79",
       };
     }
   };

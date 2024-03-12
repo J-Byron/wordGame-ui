@@ -29,10 +29,10 @@ body {
 main {
   display: flex;
   flex-direction: column;
+  max-width: 400px;
 }
 
 .container {
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -56,20 +56,22 @@ body {
 .guessList {
   margin: 1rem 0;
   width: 100%;
-  max-width: 400px;
+  // min-width: 370.55px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  min-width: 400px;
 }
 
 .guessCell_container {
   background-color: rgb(183, 183, 183, 0.37);
-  width: 100%;
+  width: inherit;
   border-radius: 3px;
   margin: 0.25rem 1rem;
   font-weight: 600;
   position: relative;
   overflow: hidden;
+  z-index: -2;
 }
 .guessCell {
   padding: 0.5rem;
@@ -102,10 +104,19 @@ body {
   border-radius: 3px;
   border: 0px;
   padding: 0px;
-  margin: 1rem 0;
+  margin-top: 1rem;
   width: 100%;
   max-width: 400px;
   text-transform: lowercase;
+  &:focus {
+    outline: 3px solid $color-blue; /* Change the outline color to blue (#00f) */
+  }
+}
+
+.notification {
+  text-align: center;
+  height: 22px;
+  margin-bottom: 1rem;
 }
 
 @media (min-width: 601px) {

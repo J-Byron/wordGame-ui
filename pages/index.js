@@ -6,42 +6,40 @@
 //* ░░░╚═╝░░░╚═╝░░╚═╝╚══════╝  ░░░╚═╝░░░╚═╝░░░╚════╝░╚═╝░░╚═╝╚═════╝░
 //* https://fsymbols.com/generators/carty/
 
+import { useState, useEffect, useContext } from "react";
 import Head from "next/head";
 import Header from "@components/Header";
 import GuessList from "@components/GuessList";
 import Input from "@components/Input";
 import { GameAPI } from "GameAPI";
-import { useState, useEffect, useContext } from "react";
-import NotificationContext from "@components/Notification/notificationManager";
-import Notification from "@components/Notification";
+import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
+import GuessNotification from "@components/GuessNotification";
+import GuessCell from "@components/GuessCell";
+import { RESPONSE_MESSAGE } from "constansts";
 
 //TODO Update localStorage item to be ...
 // const defaultGameState = {
 //   colorMode: "light",
 //   isInLobby: false,
+//    completedGames: [],
 //   games: {
 //     [date]: {
+//       lastGuess,
 //       hintsUsed: 0,
 //       guesses: [],
 //     },
 //   },
 // };
 
-const Main = ({ dates }) => {
-  // const defaultGameState = {
-  //   [date]: {
-  //     hintsUsed: 0,
-  //     isInLobby: false,
-  //     guesses: [],
-  //   },
-  // };
-
+const Main = ({ gameNumbers }) => {
   const [gameState, setGameState] = useState({});
 
   // Get last date
-  const [date, setDate] = useState(dates[dates.length - 1] || "");
+  const [gameNumber, setGameNumber] = useState(
+    gameNumbers[gameNumbers.length - 1] || ""
+  );
 
-  const notificationCtx = useContext(NotificationContext);
+  const guessNotificationContext = useContext(GuessNotificationContext);
 
   // Initialize state from localStorage
   useEffect(() => {
@@ -60,14 +58,23 @@ const Main = ({ dates }) => {
 
   useEffect(() => {
     window.localStorage.setItem("gameState", JSON.stringify(gameState));
+    console.log("did win?", gameState.completedGames?.includes(gameNumber));
   }, [gameState]);
 
   const updateGameStateGuesses = (guess) => {
     setGameState(() => {
       return {
-        [date]: {
+        ...gameState,
+        completedGames: [
+          ...(gameState.completedGames || []),
+          ...(guess.pos == 0 ? [gameNumber] : []),
+        ],
+        [gameNumber]: {
+          lastGuess: { ...guess, guesseId: null },
           guesses: [
-            ...(gameState[date] != undefined ? gameState[date]?.guesses : []),
+            ...(gameState[gameNumber] != undefined
+              ? gameState[gameNumber]?.guesses
+              : []),
             guess,
           ],
         },
@@ -77,18 +84,31 @@ const Main = ({ dates }) => {
   };
 
   const handleInputSubmit = async (word) => {
-    // TODO Validate word ie prevent duplicates, invalid inputs, invalid symbols
+    guessNotificationContext.clear();
 
     // check if word already guessed
-    const previouslyGuessed = gameState[date].guesses
+    const previouslyGuessed = gameState[gameNumber]?.guesses
       .map(({ word }) => word)
       .includes(word);
 
     if (previouslyGuessed) {
-      notificationCtx.error(`${word} has already been guessed`);
+      guessNotificationContext.error(`${word} has already been guessed`);
     } else {
-      const res = await GameAPI.getWordPosForDate(word, date);
-      updateGameStateGuesses(res);
+      try {
+        const res = await GameAPI.getWordPosForGame(word, gameNumber);
+        updateGameStateGuesses(res);
+      } catch ({ reason, word }) {
+        // * We cannot handle the error in the gameAPI because the notification context is only available in this file.
+        // * Perhaps there is a way to create the game api as a react component? Unlikely
+
+        switch (reason) {
+          case RESPONSE_MESSAGE.incorrectGuess:
+            guessNotificationContext.error(`${word} is not a valid word`);
+            break;
+          default:
+            guessNotificationContext.error(`Error occurred`);
+        }
+      }
     }
   };
 
@@ -102,8 +122,12 @@ const Main = ({ dates }) => {
       <main>
         <Header title="THE WORD" />
         <Input handleSubmit={handleInputSubmit} />
-        <Notification />
-        <GuessList guesses={gameState[date]?.guesses || []} />
+        <GuessNotification />
+        {/* This should be turned into its own component */}
+        {gameState[gameNumber]?.lastGuess && (
+          <GuessCell guess={gameState[gameNumber]?.lastGuess} />
+        )}
+        <GuessList guesses={gameState[gameNumber]?.guesses || []} />
       </main>
     </div>
   );
@@ -112,8 +136,8 @@ const Main = ({ dates }) => {
 export default Main;
 
 export async function getStaticProps() {
-  const { dates } = await GameAPI.getGameDates();
+  const { gameNumbers } = await GameAPI.getGames();
   return {
-    props: { dates },
+    props: { gameNumbers },
   };
 }

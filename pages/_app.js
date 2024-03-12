@@ -1,11 +1,11 @@
 import "@styles/styles.scss";
-import { NotificationProvider } from "@components/Notification/notificationManager";
+import { GuessNotificationProvider } from "@components/GuessNotification/guessNotificationManager";
 
 function Application({ Component, pageProps }) {
   return (
-    <NotificationProvider>
+    <GuessNotificationProvider>
       <Component {...pageProps} />
-    </NotificationProvider>
+    </GuessNotificationProvider>
   );
 }
 
