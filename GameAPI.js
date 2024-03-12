@@ -6,7 +6,7 @@ const RESPONSE_MESSAGE = {
 };
 
 const baseAPI = axios.create({
-  baseURL: "https://flash-crawler-400019.ue.r.appspot.com",
+  baseURL: process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL,
 });
 
 const errorHandler = (error) => {
