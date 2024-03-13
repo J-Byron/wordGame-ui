@@ -58,7 +58,6 @@ const Main = ({ gameNumbers }) => {
 
   useEffect(() => {
     window.localStorage.setItem("gameState", JSON.stringify(gameState));
-    console.log("did win?", gameState.completedGames?.includes(gameNumber));
   }, [gameState]);
 
   const updateGameStateGuesses = (guess) => {
