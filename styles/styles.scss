@@ -5,9 +5,12 @@
 // Light mode (default)
 $color-bone: #f1f2f4;
 $color-red: #fd2d5e;
-$color-green: #04eca3;
+$color-green: #12cc91;
 $color-blue: #4f6bff;
 $color-yellow: #ffd900;
+$color-purple: #8338ec;
+$color-gray: #d0d0d0;
+$color-gray-opaque: #b7b7b75e;
 
 // Dark mode
 
@@ -20,6 +23,10 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none; /* Standard syntax */
 }
 
 * {
@@ -27,6 +34,7 @@ body {
 }
 
 main {
+  padding-top: 2rem;
   display: flex;
   flex-direction: column;
   max-width: 400px;
@@ -45,12 +53,18 @@ body {
   background-color: $color-bone;
 }
 
+.header {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
 .title {
   top: 100px;
   font-weight: 700;
   font-style: italic;
   font-size: $font-size-lg;
   text-align: center;
+  margin: 0px;
 }
 
 .guessList {
@@ -64,7 +78,7 @@ body {
 }
 
 .guessCell_container {
-  background-color: rgb(183, 183, 183, 0.37);
+  background-color: $color-gray-opaque;
   width: inherit;
   border-radius: 3px;
   margin: 0.25rem 1rem;
@@ -77,6 +91,7 @@ body {
   padding: 0.5rem;
   display: flex;
   justify-content: space-between;
+  user-select: all;
 }
 
 .guessCell_fill {
@@ -85,7 +100,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  //   background: $color-green;
+  // background: $color-green;
   z-index: -1;
 }
 
@@ -93,18 +108,22 @@ body {
   margin: 0.25rem 1rem;
 }
 
+*::placeholder {
+  color: rgb(185, 185, 185);
+}
+
 .guessForm {
   color: #363636;
   font-size: 20px;
   line-height: 1.5;
-  font-weight: 800;
+  font-weight: 600;
   font-family: "Saira", sans-serif;
   text-indent: 12px;
   height: 36px;
   border-radius: 3px;
   border: 0px;
   padding: 0px;
-  margin-top: 1rem;
+  margin: 1rem 0;
   width: 100%;
   max-width: 400px;
   text-transform: lowercase;
@@ -115,8 +134,166 @@ body {
 
 .notification {
   text-align: center;
+  font-weight: 600;
   height: 22px;
-  margin-bottom: 1rem;
+}
+
+.levelSelectorButton_container {
+  width: 60px;
+  height: 60px;
+  background: rgba(183, 183, 183, 0.37) content-box;
+  border: solid 3px rgba(0, 0, 0, 0);
+  border-radius: 3px;
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  transition: border 0.2s ease-in-out;
+  cursor: pointer;
+  z-index: 3;
+
+  &:hover {
+    border: solid 3px $color-blue;
+  }
+
+  &.highlighted {
+    border: solid 3px $color-blue;
+    background-color: $color-bone;
+  }
+
+  &.green {
+    background-color: $color-green;
+  }
+
+  .random {
+    animation: pulse 3s linear infinite;
+  }
+}
+
+.show {
+  display: contents;
+}
+
+.levelSelectorModal_backdrop {
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.levelSelectorModal_container {
+  background-color: $color-bone;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns:
+    [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(
+      20% - 0.8rem
+    )
+    [col4] calc(20% - 0.8rem) [col5] calc(20% - 0.8rem);
+  grid-gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 3px;
+  // border: 10px solid black;
+}
+
+.levelSelectorModal_cell {
+  cursor: pointer;
+  position: relative;
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-weight: 600;
+  background: content-box;
+  height: 60px;
+  border-radius: 3px;
+  border: solid 3px rgba(0, 0, 0, 0);
+  transition: border 0.2s ease-in-out;
+  background-color: $color-gray-opaque;
+  .random {
+    animation: pulse 3s linear infinite;
+  }
+
+  // ::before {
+  //   content: "";
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
+  //   border: solid 3px red;
+  //   border-radius: 3px; /* Apply border-radius to the pseudo-element */
+  //
+
+  &.gray {
+    background-color: $color-gray-opaque;
+  }
+
+  &.green {
+    background-color: $color-green;
+  }
+
+  &:hover {
+    border: solid 3px $color-blue;
+  }
+
+  // ::after {
+  //   content: "";
+  //   position: absolute;
+  //   top: -6%; /* Position from the center vertically */
+  //   left: -6%; /* Position from the center horizontally */
+  //   width: 100%;
+  //   height: 100%;
+  //   background: content-box;
+  //   border: solid 3px $color-blue;
+  //   border-radius: 3px; /* Apply border-radius to the pseudo-element */
+  // }
+}
+
+@keyframes pulse {
+  0% {
+    color: rgb(70, 70, 245);
+  }
+  10% {
+    color: rgb(242, 69, 69);
+  }
+  20% {
+    color: rgb(227, 177, 70);
+  }
+  30% {
+    color: rgb(153, 223, 82);
+  }
+  40% {
+    color: rgb(85, 208, 144);
+  }
+  50% {
+    color: rgb(70, 194, 192);
+  }
+  60% {
+    color: rgb(83, 96, 199);
+  }
+  70% {
+    color: rgb(194, 88, 230);
+  }
+  80% {
+    color: rgb(162, 63, 126);
+  }
+  90% {
+    color: rgb(206, 37, 37);
+  }
+  100% {
+    color: rgb(9, 73, 213);
+  }
 }
 
 @media (min-width: 601px) {

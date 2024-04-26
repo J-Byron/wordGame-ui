@@ -1,4 +1,4 @@
-import GuessCell from "../GuessCell";
+import GuessCell from "./GuessCell";
 
 const GuessList = ({ guesses = [] }) => {
   return (

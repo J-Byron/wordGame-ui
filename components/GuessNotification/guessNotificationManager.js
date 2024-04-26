@@ -3,8 +3,9 @@ import { useState, createContext } from "react";
 const GuessNotificationContext = createContext({
   notificationState: null,
   notificationText: null,
-  success: () => {},
-  error: () => {},
+  success: (string) => {},
+  error: (string) => {},
+  clear: () => {},
 });
 
 const STATES = {

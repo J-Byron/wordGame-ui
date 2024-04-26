@@ -8,12 +8,19 @@
     "export": "next export"
   },
   "dependencies": {
+    "@crello/react-lottie": "^0.0.11",
     "@react-spring/web": "^9.7.3",
     "axios": "^1.5.1",
     "next": "^12.1.5",
+    "prop-types": "^15.8.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-use-measure": "^2.1.1",
     "sass": "^1.69.7"
+  },
+  "devDependencies": {
+    "@types/node": "20.12.7",
+    "@types/react": "18.2.79",
+    "typescript": "5.4.5"
   }
 }

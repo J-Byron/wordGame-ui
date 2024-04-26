@@ -18,7 +18,7 @@ import GuessCell from "@components/GuessCell";
 import { RESPONSE_MESSAGE } from "constansts";
 import LevelSelectorButton from "@components/LevelSelectorButton";
 import { LevelSelectorModal } from "@components/LevelSelectorModal";
-import { CompletedLevelPopup } from "@components/completedLevelPopup";
+import { useRouter } from "next/router";
 
 //TODO Update localStorage item to be ...
 // const defaultGameState = {
@@ -34,42 +34,26 @@ import { CompletedLevelPopup } from "@components/completedLevelPopup";
 //   },
 // };
 
-const Main = ({ levels }) => {
+const Main = ({ level, levels, token = null }) => {
   const [gameState, setGameState] = useState({ completedGames: [], games: {} });
   const [showLevelSelector, setShowLevelSelector] = useState(false);
-  const [level, setLevel] = useState(1);
-  const [randomLevelToken, setRandomLevelToken] = useState(null);
 
   const guessNotificationContext = useContext(GuessNotificationContext);
+  const router = useRouter();
 
+  // Initialize state from localStorage
   useEffect(() => {
-    // Initialize state from localStorage
+    // window.localStorage.clear();
     let storedGameState = JSON.parse(window.localStorage.getItem("gameState"));
 
     if (level === "?") {
       storedGameState.games["?"] = { guesses: [] };
     }
 
+    console.log(storedGameState);
+
     if (storedGameState != null) {
       setGameState(storedGameState);
-      const { completedGames, mostRecentLevel } = storedGameState;
-
-      const incompleteLevels = levels.filter(
-        (num) => !completedGames.includes(num)
-      );
-
-      const highestIncompleteLevel =
-        incompleteLevels.length > 0
-          ? Math.max(...incompleteLevels)
-          : Math.max(...levels);
-
-      setLevel(
-        completedGames.includes(mostRecentLevel)
-          ? highestIncompleteLevel
-          : mostRecentLevel
-      );
-    } else {
-      setLevel(Math.max(...levels));
     }
   }, []);
 
@@ -102,6 +86,7 @@ const Main = ({ levels }) => {
         },
       };
     });
+    window.localStorage.setItem("gameState", JSON.stringify(gameState));
   };
 
   const handleInputSubmit = async (word) => {
@@ -117,13 +102,12 @@ const Main = ({ levels }) => {
     } else {
       try {
         let res;
-        if (randomLevelToken) {
-          res = await GameAPI.getWordPosForMysteryDate(word, randomLevelToken);
+        if (token) {
+          res = await GameAPI.getWordPosForMysteryDate(word, token);
         } else {
           res = await GameAPI.getWordPosForGame(word, level);
         }
         updateGameStateGuesses(res);
-        console.log(res.pos === 0 ? "win" : "not win");
       } catch ({ reason, word }) {
         // * We cannot handle the error in the gameAPI because the notification context is only available in this file.
         // * Perhaps there is a way to create the game api as a react component? Unlikely
@@ -143,27 +127,27 @@ const Main = ({ levels }) => {
     setShowLevelSelector(!showLevelSelector);
   };
 
-  const handleLevelClick = async (clickedLevel) => {
+  const handleLevelClick = (clickedLevel) => {
     if (clickedLevel === "?") {
-      const token = await GameAPI.getMysteryToken();
-      setRandomLevelToken(token);
-      setGameState({
-        ...gameState,
-        games: { ...gameState.games, ["?"]: { guesses: [] } },
-      });
+      router
+        .push({
+          pathname: `/random`,
+        })
+        .then(() => {
+          guessNotificationContext.clear();
+          toggleModal();
+        });
     } else {
-      setGameState({ ...gameState, mostRecentLevel: clickedLevel });
+      router
+        .push({
+          pathname: `/${clickedLevel}`,
+        })
+        .then(() => {
+          guessNotificationContext.clear();
+          toggleModal();
+        });
     }
-
-    setLevel(clickedLevel);
-    guessNotificationContext.clear();
-    toggleModal();
   };
-
-  const modalLevels = levels.map((level) => ({
-    level,
-    isComplete: gameState.completedGames.includes(level),
-  }));
 
   return (
     <div className="container">
@@ -172,18 +156,16 @@ const Main = ({ levels }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        {gameState.completedGames.includes(level) && <CompletedLevelPopup />}
         <div className="header">
           <Header title="THE WORD" />
           <LevelSelectorButton
             level={level}
             handleClick={toggleModal}
             isHighlighted={showLevelSelector}
-            isComplete={gameState.completedGames.includes(level)}
           />
         </div>
         <LevelSelectorModal
-          levels={modalLevels}
+          levels={levels}
           show={showLevelSelector}
           handleLevelClick={handleLevelClick}
           handleOutsideClick={toggleModal}
@@ -208,10 +190,23 @@ const Main = ({ levels }) => {
 
 export default Main;
 
-export async function getStaticProps() {
+export async function getStaticProps({ params }) {
   const { gameNumbers: levels } = await GameAPI.getGames();
-  const sortedLevels = levels.sort((a, b) => b - a);
+  const { level } = params;
   return {
-    props: { levels: sortedLevels },
+    props: { level, levels: levels.reverse() },
+  };
+}
+
+export async function getStaticPaths() {
+  // Generate paths for all levels
+  const { gameNumbers } = await GameAPI.getGames();
+
+  const paths = gameNumbers.map((game) => ({
+    params: { level: game },
+  }));
+  return {
+    paths,
+    fallback: false, // 404 for undefined paths
   };
 }

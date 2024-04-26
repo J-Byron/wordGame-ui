@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import useMeasure from "react-use-measure";
 import { useSpring, animated } from "@react-spring/web";
 
-const GuessCell = ({ guess }) => {
+const GuessCell = ({ guess, isHighlighted = false }) => {
   if (guess == null) return null;
 
   const { word, pos } = guess;
@@ -16,16 +16,16 @@ const GuessCell = ({ guess }) => {
 
   // Function to calculate width percentage based on distance
   const calculateWidthAndColor = () => {
-    const maxDistance = 2000;
+    const maxDistance = 3000;
     const percentage = 1 - pos / maxDistance;
 
-    if (pos >= 2000) {
+    if (pos >= maxDistance) {
       // RED
       return {
         width: didMount ? width * 0.05 : 0,
         backgroundColor: "#FF4F79",
       };
-    } else if (pos < 2000 && pos >= 200) {
+    } else if (pos < maxDistance && pos >= 200) {
       // YELLOW
       return {
         width: didMount ? width * Math.max(percentage, 0.05) : 0,

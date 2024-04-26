@@ -10,6 +10,7 @@ const baseAPI = axios.create({
 });
 
 const errorHandler = (error) => {
+  console.log(error);
   const { status: statusCode } = error?.response;
 
   if (statusCode && statusCode !== 400) {
@@ -92,13 +93,21 @@ export const GameAPI = {
 
   getWordPosForMysteryDate: async (word, token) => {
     const { data } = await baseAPI.request({
-      url: `/mystery-game-number/word/${word}`,
+      url: `/mystery-game/word/${word}`,
       method: "GET",
-      Headers: {
-        "X-Access-Token": token,
+      headers: {
+        "R-Auth": token,
       },
     });
 
+    return data;
+  },
+
+  getTop100ForLevel: async (level) => {
+    const { data } = await baseAPI.request({
+      url: `/level/${level}/top100`,
+      method: "GET",
+    });
     return data;
   },
 };
