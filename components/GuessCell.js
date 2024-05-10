@@ -18,26 +18,28 @@ const GuessCell = ({ guess, isHighlighted = false }) => {
   const calculateWidthAndColor = () => {
     const maxDistance = 3000;
     const percentage = 1 - pos / maxDistance;
+    const exponentialFactor = 2; // Adjust this factor to control the rate of increase
 
-    if (pos >= maxDistance) {
-      // RED
-      return {
-        width: didMount ? width * 0.05 : 0,
-        backgroundColor: "#FF4F79",
-      };
-    } else if (pos < maxDistance && pos >= 200) {
-      // YELLOW
-      return {
-        width: didMount ? width * Math.max(percentage, 0.05) : 0,
-        backgroundColor: didMount ? "#EDCD1D" : "#FF4F79",
-      };
-    } else {
-      // GREEN
-      return {
-        width: didMount ? width * Math.max(percentage, 0.05) : 0,
-        backgroundColor: didMount ? "#12CC91" : "#FF4F79",
-      };
-    }
+    const bgColor = (pos) => {
+      switch (true) {
+        case pos < maxDistance && pos >= 200:
+          return "#EDCD1D";
+        case pos < 200:
+          return "#12CC91";
+        default:
+          return "#FF4F79";
+      }
+    };
+
+    return {
+      width: didMount
+        ? Math.max(
+            width * Math.pow(Math.max(percentage, 0.05), exponentialFactor),
+            width * 0.05
+          )
+        : 0,
+      backgroundColor: didMount ? bgColor(pos) : "#FF4F79",
+    };
   };
 
   const props = useSpring({
@@ -51,7 +53,10 @@ const GuessCell = ({ guess, isHighlighted = false }) => {
   }, []);
 
   return (
-    <div ref={ref} className="guessCell_container">
+    <div
+      ref={ref}
+      className={`guessCell_container ${isHighlighted ? "highlighted" : ""}`}
+    >
       <div className="guessCell">
         <span className="guessCell_word">{word}</span>
 

@@ -17,12 +17,16 @@ $color-gray-opaque: #b7b7b75e;
 $font-size-md: 14px;
 $font-size-lg: 36px;
 
+.bold {
+  font-weight: bold;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
+    Helvetica Neue, sans-serif;
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE 10+ */
@@ -86,6 +90,10 @@ body {
   position: relative;
   overflow: hidden;
   z-index: -2;
+
+  &.highlighted {
+    border: 3px solid #484848;
+  }
 }
 .guessCell {
   padding: 0.5rem;
@@ -194,9 +202,7 @@ body {
   padding: 1rem;
   display: grid;
   grid-template-columns:
-    [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(
-      20% - 0.8rem
-    )
+    [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(20% - 0.8rem)
     [col4] calc(20% - 0.8rem) [col5] calc(20% - 0.8rem);
   grid-gap: 1rem;
   width: 100%;
@@ -224,17 +230,6 @@ body {
     animation: pulse 3s linear infinite;
   }
 
-  // ::before {
-  //   content: "";
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   height: 100%;
-  //   border: solid 3px red;
-  //   border-radius: 3px; /* Apply border-radius to the pseudo-element */
-  //
-
   &.gray {
     background-color: $color-gray-opaque;
   }
@@ -246,18 +241,91 @@ body {
   &:hover {
     border: solid 3px $color-blue;
   }
+}
 
-  // ::after {
-  //   content: "";
-  //   position: absolute;
-  //   top: -6%; /* Position from the center vertically */
-  //   left: -6%; /* Position from the center horizontally */
-  //   width: 100%;
-  //   height: 100%;
-  //   background: content-box;
-  //   border: solid 3px $color-blue;
-  //   border-radius: 3px; /* Apply border-radius to the pseudo-element */
-  // }
+.completedLevelPopup_backdrop {
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4;
+}
+
+.completedLevelPopup_container {
+  text-align: center;
+  background-color: $color-bone;
+  width: 400px;
+  border-radius: 3px;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 18px;
+
+  .completedLevelPopup_title {
+    font-size: 28px;
+    margin-bottom: 0.5rem;
+  }
+
+  .completedLevelPopup_word {
+    background-color: $color-blue;
+    width: 100%;
+    color: $color-bone;
+    margin-bottom: 0.5rem;
+  }
+
+  .completedLevelPopup_statsContainer {
+    margin-bottom: 2rem;
+    .completedLevelPopup_colors {
+      display: flex;
+      justify-content: center;
+      color: black;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      > * {
+        text-align: center;
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 3px;
+      }
+      > :nth-child(1) {
+        // green;
+        background-color: $color-green;
+      }
+      > :nth-child(2) {
+        // yellow
+        background-color: $color-yellow;
+      }
+      > :nth-child(3) {
+        // red
+        background-color: $color-red;
+      }
+    }
+  }
+
+  .completedLevelPopup_footer {
+    display: flex;
+    justify-content: space-evenly;
+
+    .completedLevelPopup_closeButton {
+      padding: 2px 20px;
+      cursor: pointer;
+    }
+    .completedLevelPopup_nextButton {
+      cursor: pointer;
+      font-weight: bold;
+      color: $color-bone;
+      padding: 2px 20px;
+      background-color: $color-blue;
+      border-radius: 3px;
+    }
+  }
 }
 
 @keyframes pulse {

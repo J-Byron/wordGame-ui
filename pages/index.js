@@ -6,43 +6,40 @@
 //* ░░░╚═╝░░░╚═╝░░╚═╝╚══════╝  ░░░╚═╝░░░╚═╝░░░╚════╝░╚═╝░░╚═╝╚═════╝░
 //* https://fsymbols.com/generators/carty/
 
+// "use client";
+
 import { useState, useEffect, useContext } from "react";
+import dynamic from "next/dynamic";
 import Head from "next/head";
-import Header from "@components/Header";
 import GuessList from "@components/GuessList";
 import Input from "@components/Input";
-import { GameAPI } from "api/GameAPI";
-import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
-import GuessNotification from "@components/GuessNotification";
 import GuessCell from "@components/GuessCell";
+import { GameAPI } from "api/GameAPI";
 import { RESPONSE_MESSAGE } from "constansts";
-import LevelSelectorButton from "@components/LevelSelectorButton";
-import { LevelSelectorModal } from "@components/LevelSelectorModal";
-import { CompletedLevelPopup } from "@components/completedLevelPopup";
 
-//TODO Update localStorage item to be ...
-// const defaultGameState = {
-//   colorMode: "light",
-//   isInLobby: false,
-//    completedGames: [],
-//   games: {
-//     [date]: {
-//       lastGuess,
-//       hintsUsed: 0,
-//       guesses: [],
-//     },
-//   },
-// };
+import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
+
+const GuessNotification = dynamic(() => import("@components/GuessNotification"));
+const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
+const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
+const CompletedLevelPopup = dynamic(() => import("@components/CompletedLevelPopup"));
 
 const Main = ({ levels }) => {
   const [gameState, setGameState] = useState({ completedGames: [], games: {} });
   const [showLevelSelector, setShowLevelSelector] = useState(false);
-  const [level, setLevel] = useState(1);
+  const [showLevelCompleted, setShowLevelCompleted] = useState(false);
+  const [level, setLevel] = useState("1");
   const [randomLevelToken, setRandomLevelToken] = useState(null);
-
   const guessNotificationContext = useContext(GuessNotificationContext);
 
   useEffect(() => {
+    console.log("████████╗██╗░░██╗███████╗  ░██╗░░░░░░░██╗░█████╗░██████╗░██████╗░");
+    console.log("╚══██╔══╝██║░░██║██╔════╝  ░██║░░██╗░░██║██╔══██╗██╔══██╗██╔══██╗");
+    console.log("░░░██║░░░███████║█████╗░░  ░╚██╗████╗██╔╝██║░░██║██████╔╝██║░░██║");
+    console.log("░░░██║░░░██╔══██║██╔══╝░░  ░░████╔═████║░██║░░██║██╔══██╗██║░░██║");
+    console.log("░░░██║░░░██║░░██║███████╗  ░░╚██╔╝░╚██╔╝░╚█████╔╝██║░░██║██████╔╝");
+    console.log("░░░╚═╝░░░╚═╝░░╚═╝╚══════╝  ░░░╚═╝░░░╚═╝░░░╚════╝░╚═╝░░╚═╝╚═════╝░");
+
     // Initialize state from localStorage
     let storedGameState = JSON.parse(window.localStorage.getItem("gameState"));
 
@@ -54,50 +51,60 @@ const Main = ({ levels }) => {
       setGameState(storedGameState);
       const { completedGames, mostRecentLevel } = storedGameState;
 
-      const incompleteLevels = levels.filter(
-        (num) => !completedGames.includes(num)
-      );
+      const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
 
       const highestIncompleteLevel =
-        incompleteLevels.length > 0
-          ? Math.max(...incompleteLevels)
-          : Math.max(...levels);
+        incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
 
-      setLevel(
-        completedGames.includes(mostRecentLevel)
-          ? highestIncompleteLevel
-          : mostRecentLevel
-      );
+      setLevel(completedGames.includes(mostRecentLevel) ? highestIncompleteLevel : mostRecentLevel);
     } else {
-      setLevel(Math.max(...levels));
+      setLevel(Math.max(...levels).toString());
     }
   }, []);
-
-  // Only update localStorage with gameState after component is mounted
-  // TODO should not be called twice upon mount state update
 
   useEffect(() => {
     window.localStorage.setItem("gameState", JSON.stringify(gameState));
   }, [gameState]);
 
+  useEffect(() => {
+    if (gameState.completedGames.includes(level)) {
+      setShowLevelCompleted(true);
+    } else {
+      setShowLevelCompleted(false);
+    }
+  }, [level]);
+
   const updateGameStateGuesses = (guess) => {
+    if (guess.pos == 0) {
+      // TODO need to submit # of guesses to a DB to track level difficulty (1-3)
+      setShowLevelCompleted(true);
+    }
     setGameState(() => {
+      const { word, pos } = guess;
+      const prevGuess = gameState.games[level]?.lastGuess;
+
+      const prevColdStreak = gameState.games[level]?.currentColdStreak;
+      const prevHotStreak = gameState.games[level]?.currentHotStreak;
+
       return {
         ...gameState,
-        completedGames: [
-          ...(gameState.completedGames || []),
-          ...(guess.pos == 0 ? [level] : []),
-        ],
+        completedGames: [...(gameState.completedGames || []), ...(pos == 0 && level != "?" ? [level] : [])],
         games: {
           ...gameState.games,
           [level]: {
             lastGuess: { ...guess, guesseId: null },
-            guesses: [
-              ...(gameState.games[level] != undefined
-                ? gameState.games[level]?.guesses
-                : []),
-              guess,
-            ],
+            currentColdStreak: pos > prevGuess?.pos ? prevColdStreak + 1 : 0,
+            currentHotStreak: pos < prevGuess?.pos ? prevHotStreak + 1 : 0,
+            longestColdStreak: Math.max(prevColdStreak, gameState.games[level]?.longestColdStreak) || 0,
+            longestHotStreak: Math.max(prevHotStreak, gameState.games[level]?.longestHotStreak) || 0,
+            guesses: [...(gameState.games[level] != undefined ? gameState.games[level]?.guesses : []), guess],
+            correctWord: pos == 0 ? word : gameState.games[level]?.correctWord,
+            // if already complete, use complete, otherwise if pos == 0 set complete, otherwise null
+            completedGameState: gameState.games[level]?.completedGameState
+              ? gameState.games[level].completedGameState
+              : pos == 0
+              ? { ...gameState.games[level] }
+              : null,
           },
         },
       };
@@ -108,9 +115,7 @@ const Main = ({ levels }) => {
     guessNotificationContext.clear();
 
     // check if word already guessed
-    const previouslyGuessed = gameState.games[level]?.guesses
-      .map(({ word }) => word)
-      .includes(word);
+    const previouslyGuessed = gameState.games[level]?.guesses.map(({ word }) => word).includes(word);
 
     if (previouslyGuessed) {
       guessNotificationContext.error(`${word} has already been guessed`);
@@ -123,7 +128,6 @@ const Main = ({ levels }) => {
           res = await GameAPI.getWordPosForGame(word, level);
         }
         updateGameStateGuesses(res);
-        console.log(res.pos === 0 ? "win" : "not win");
       } catch ({ reason, word }) {
         // * We cannot handle the error in the gameAPI because the notification context is only available in this file.
         // * Perhaps there is a way to create the game api as a react component? Unlikely
@@ -139,8 +143,14 @@ const Main = ({ levels }) => {
     }
   };
 
-  const toggleModal = () => {
+  const toggleLevelSelectorModal = () => {
+    if (showLevelCompleted) setShowLevelCompleted(false);
     setShowLevelSelector(!showLevelSelector);
+  };
+
+  const closeLevelCompletedModal = () => {
+    if (showLevelSelector) setShowLevelSelector(false);
+    setShowLevelCompleted(false);
   };
 
   const handleLevelClick = async (clickedLevel) => {
@@ -157,7 +167,33 @@ const Main = ({ levels }) => {
 
     setLevel(clickedLevel);
     guessNotificationContext.clear();
-    toggleModal();
+    toggleLevelSelectorModal();
+  };
+
+  const handleNextLevelClick = () => {
+    const { completedGames } = gameState;
+
+    const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
+    const highestIncompleteLevel =
+      incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
+
+    setLevel(incompleteLevels.length >= 1 ? highestIncompleteLevel : level);
+  };
+
+  const getCompletedLevelStats = () => {
+    console.log(gameState.games[level]);
+    const { longestColdStreak, currentColdStreak, longestHotStreak, currentHotStreak, guesses } =
+      gameState.games[level].completedGameState;
+    const stats = {
+      guesses: guesses.length,
+      green: guesses.filter((g) => g.pos < 200).length,
+      yellow: guesses.filter((g) => g.pos >= 200 && g.pos < 3000).length,
+      red: guesses.filter((g) => g.pos >= 3000).length,
+      longestColdStreak: Math.max(currentColdStreak, longestColdStreak),
+      longestHotStreak: Math.max(currentHotStreak, longestHotStreak),
+      percentile: "Coming Soon",
+    };
+    return stats;
   };
 
   const modalLevels = levels.map((level) => ({
@@ -172,22 +208,32 @@ const Main = ({ levels }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        {gameState.completedGames.includes(level) && <CompletedLevelPopup />}
+        {showLevelCompleted && (
+          <CompletedLevelPopup
+            level={level}
+            handleCloseClick={closeLevelCompletedModal}
+            handleNextClick={handleNextLevelClick}
+            correctWord={gameState.games[level]?.correctWord}
+            stats={getCompletedLevelStats()}
+          />
+        )}
         <div className="header">
-          <Header title="THE WORD" />
+          <h1 className="title">{"THE WORD"}</h1>
           <LevelSelectorButton
             level={level}
-            handleClick={toggleModal}
+            handleClick={toggleLevelSelectorModal}
             isHighlighted={showLevelSelector}
             isComplete={gameState.completedGames.includes(level)}
           />
         </div>
-        <LevelSelectorModal
-          levels={modalLevels}
-          show={showLevelSelector}
-          handleLevelClick={handleLevelClick}
-          handleOutsideClick={toggleModal}
-        />
+
+        {showLevelSelector && (
+          <LevelSelectorModal
+            levels={modalLevels}
+            handleLevelClick={handleLevelClick}
+            handleClose={toggleLevelSelectorModal}
+          />
+        )}
         <Input handleSubmit={handleInputSubmit} />
 
         {/* TODO should create a component to dynamically display notification/lastGuess */}
@@ -196,11 +242,14 @@ const Main = ({ levels }) => {
           <GuessNotification />
         ) : (
           gameState.games[level]?.lastGuess && (
-            <GuessCell guess={gameState.games[level]?.lastGuess} />
+            <GuessCell guess={gameState.games[level]?.lastGuess} isHighlighted={true} />
           )
         )}
 
-        <GuessList guesses={gameState.games[level]?.guesses || []} />
+        <GuessList
+          guesses={gameState.games[level]?.guesses || []}
+          lastGuess={gameState.games[level]?.lastGuess?.word}
+        />
       </main>
     </div>
   );
@@ -210,8 +259,7 @@ export default Main;
 
 export async function getStaticProps() {
   const { gameNumbers: levels } = await GameAPI.getGames();
-  const sortedLevels = levels.sort((a, b) => b - a);
   return {
-    props: { levels: sortedLevels },
+    props: { levels: levels },
   };
 }

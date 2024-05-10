@@ -1,16 +1,6 @@
-export const LevelSelectorModal = ({
-  levels,
-  show,
-  handleLevelClick,
-  handleOutsideClick,
-}) => {
-  // TODO levels should be [{level: string, isComplete: bool}]
+const LevelSelectorModal = ({ levels, handleLevelClick, handleClose }) => {
   return (
-    <div
-      className="levelSelectorModal_backdrop"
-      style={{ display: `${show ? " " : "none "}` }}
-      onClick={handleOutsideClick}
-    >
+    <div className="levelSelectorModal_backdrop" onClick={handleClose}>
       <div
         className="levelSelectorModal_container"
         onClick={(e) => {
@@ -21,7 +11,9 @@ export const LevelSelectorModal = ({
           return (
             <div
               className={`levelSelectorModal_cell ${isComplete ? "green" : ""}`}
-              onClick={() => handleLevelClick(level)}
+              onClick={() => {
+                handleLevelClick(level);
+              }}
               key={index}
             >
               <span>Level</span>
@@ -33,3 +25,4 @@ export const LevelSelectorModal = ({
     </div>
   );
 };
+export default LevelSelectorModal;

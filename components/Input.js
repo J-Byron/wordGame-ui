@@ -79,12 +79,6 @@ const Input = ({ handleSubmit }) => {
 
   let randomWord = getRandomWord();
 
-  const handleKeyDown = (event) => {
-    if (event.key === " ") {
-      setInputValue(randomWord);
-    }
-  };
-
   const handleInputChange = (event) => {
     const value = event.target.value.toLowerCase().replace(/[^a-z]/g, "");
     setInputValue(value);
@@ -108,7 +102,6 @@ const Input = ({ handleSubmit }) => {
           type="text"
           value={inputValue}
           onChange={handleInputChange}
-          // onKeyDown={handleKeyDown} Feels like cheating is user spams spacebar
           placeholder={`type a word like '${isClient ? randomWord : "banana"}'`}
         />
       </form>

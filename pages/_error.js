@@ -7,7 +7,6 @@
 //* https://fsymbols.com/generators/carty/
 
 import Head from "next/head";
-import Header from "@components/Header";
 import GuessCell from "@components/GuessCell";
 
 const CustomErrorPage = ({ statusCode }) => {
@@ -19,7 +18,8 @@ const CustomErrorPage = ({ statusCode }) => {
       </Head>
 
       <main>
-        <Header title="Page not found" />
+        <h1 className="title">{"Page not found"}</h1>
+
         <GuessCell guess={{ word: "error", pos: 404 }} />
       </main>
     </div>

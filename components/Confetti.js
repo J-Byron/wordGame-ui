@@ -1,7 +1,7 @@
 import animationData from "public/lottie/confetti1.json";
 import { Lottie } from "@crello/react-lottie";
 
-const Confetti = () => {
+const Confetti = ({ toggle }) => {
   const defaultOptions = {
     loop: false,
     autoplay: true,
@@ -14,8 +14,8 @@ const Confetti = () => {
   return (
     <div style={{ zIndex: "999", position: "absolute", pointerEvents: "none" }}>
       <Lottie
+        key={toggle}
         config={defaultOptions}
-        // options={defaultOptions}
         height={600}
         width={400}
         isClickToPauseDisabled={true}
