@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
 import Confetti from "./Confetti";
 
-const CompletedLevelPopup = ({ level, handleCloseClick, handleNextClick, correctWord = null, stats }) => {
+const CompletedLevelPopup = ({
+  level,
+  handleCloseClick,
+  handleNextClick,
+  handleSeeClosestWordsClick,
+  correctWord = null,
+  stats,
+}) => {
   const [showConfetti, setShowConfetti] = useState(false);
 
   const toggleConfetti = () => setShowConfetti(!showConfetti);
@@ -47,7 +54,9 @@ const CompletedLevelPopup = ({ level, handleCloseClick, handleNextClick, correct
             <div>
               percentile: <span className="bold">{percentile}</span>
             </div>
-            <div>see closest words</div>
+            <span className="completedLevelPopup_closest" onClick={handleSeeClosestWordsClick}>
+              see closest words
+            </span>
           </div>
           <div className="completedLevelPopup_footer">
             <div className="completedLevelPopup_closeButton" onClick={handleCloseClick}>

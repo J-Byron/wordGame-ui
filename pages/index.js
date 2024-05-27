@@ -19,6 +19,7 @@ import { RESPONSE_MESSAGE } from "constansts";
 
 import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
 
+const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
 const GuessNotification = dynamic(() => import("@components/GuessNotification"));
 const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
 const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
@@ -26,11 +27,24 @@ const CompletedLevelPopup = dynamic(() => import("@components/CompletedLevelPopu
 
 const Main = ({ levels }) => {
   const [gameState, setGameState] = useState({ completedGames: [], games: {} });
-  const [showLevelSelector, setShowLevelSelector] = useState(false);
-  const [showLevelCompleted, setShowLevelCompleted] = useState(false);
   const [level, setLevel] = useState("1");
   const [randomLevelToken, setRandomLevelToken] = useState(null);
+  const [closestWords, setClosestWords] = useState([]);
+
+  const [showLevelSelector, setShowLevelSelector] = useState(false);
+  const [showLevelCompleted, setShowLevelCompleted] = useState(false);
+  const [showClosestWords, setShowClosestWords] = useState(false);
+
+  const [isClosestWordsLoading, setIsClosestWordsLoading] = useState(false);
+
   const guessNotificationContext = useContext(GuessNotificationContext);
+
+  // TODO migrate modal state to this 👇🏼
+  // const [showModals, setShowModals] = useState({
+  //   showLevelCompleted: false,
+  //   showLevelSelector: false,
+  //   showClosestWords: false,
+  // });
 
   useEffect(() => {
     console.log("████████╗██╗░░██╗███████╗  ░██╗░░░░░░░██╗░█████╗░██████╗░██████╗░");
@@ -75,10 +89,6 @@ const Main = ({ levels }) => {
   }, [level]);
 
   const updateGameStateGuesses = (guess) => {
-    if (guess.pos == 0) {
-      // TODO need to submit # of guesses to a DB to track level difficulty (1-3)
-      setShowLevelCompleted(true);
-    }
     setGameState(() => {
       const { word, pos } = guess;
       const prevGuess = gameState.games[level]?.lastGuess;
@@ -109,6 +119,11 @@ const Main = ({ levels }) => {
         },
       };
     });
+
+    if (guess.pos == 0) {
+      // TODO need to submit # of guesses to a DB to track level difficulty (1-3)
+      setShowLevelCompleted(true);
+    }
   };
 
   const handleInputSubmit = async (word) => {
@@ -131,7 +146,6 @@ const Main = ({ levels }) => {
       } catch ({ reason, word }) {
         // * We cannot handle the error in the gameAPI because the notification context is only available in this file.
         // * Perhaps there is a way to create the game api as a react component? Unlikely
-
         switch (reason) {
           case RESPONSE_MESSAGE.incorrectGuess:
             guessNotificationContext.error(`I'm sorry, I don't know this word`);
@@ -153,6 +167,10 @@ const Main = ({ levels }) => {
     setShowLevelCompleted(false);
   };
 
+  const closeClosestWordsModal = () => {
+    setShowClosestWords(false);
+  };
+
   const handleLevelClick = async (clickedLevel) => {
     if (clickedLevel === "?") {
       const token = await GameAPI.getMysteryToken();
@@ -161,6 +179,8 @@ const Main = ({ levels }) => {
         ...gameState,
         games: { ...gameState.games, ["?"]: { guesses: [] } },
       });
+    } else if (clickedLevel == level && gameState.completedGames.includes(level)) {
+      setShowLevelCompleted(true);
     } else {
       setGameState({ ...gameState, mostRecentLevel: clickedLevel });
     }
@@ -177,16 +197,25 @@ const Main = ({ levels }) => {
     const highestIncompleteLevel =
       incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
 
+    setShowLevelCompleted(false);
     setLevel(incompleteLevels.length >= 1 ? highestIncompleteLevel : level);
   };
 
+  const handleSeeClosestWordsClick = async () => {
+    setShowClosestWords(true);
+    setShowLevelCompleted(false);
+    setIsClosestWordsLoading(true);
+    const words = await GameAPI.getTop100ForLevel(level);
+    setIsClosestWordsLoading(false);
+    setClosestWords(words);
+  };
+
   const getCompletedLevelStats = () => {
-    console.log(gameState.games[level]);
     const { longestColdStreak, currentColdStreak, longestHotStreak, currentHotStreak, guesses } =
-      gameState.games[level].completedGameState;
+      gameState.games[level]?.completedGameState;
     const stats = {
-      guesses: guesses.length,
-      green: guesses.filter((g) => g.pos < 200).length,
+      guesses: guesses.length + 1,
+      green: guesses.filter((g) => g.pos < 200).length + 1,
       yellow: guesses.filter((g) => g.pos >= 200 && g.pos < 3000).length,
       red: guesses.filter((g) => g.pos >= 3000).length,
       longestColdStreak: Math.max(currentColdStreak, longestColdStreak),
@@ -214,9 +243,19 @@ const Main = ({ levels }) => {
             handleCloseClick={closeLevelCompletedModal}
             handleNextClick={handleNextLevelClick}
             correctWord={gameState.games[level]?.correctWord}
+            handleSeeClosestWordsClick={handleSeeClosestWordsClick}
             stats={getCompletedLevelStats()}
           />
         )}
+
+        {showClosestWords && (
+          <ClosestWordList
+            words={closestWords}
+            isLoading={isClosestWordsLoading}
+            handleClose={closeClosestWordsModal}
+          />
+        )}
+
         <div className="header">
           <h1 className="title">{"THE WORD"}</h1>
           <LevelSelectorButton

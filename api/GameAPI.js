@@ -103,6 +103,13 @@ export const GameAPI = {
     return data;
   },
 
+  /**
+   * Return the top 100 words
+   *
+   * @param {string} level - The level from which you want to grab top levels from
+   * @returns {Promise<[{ word: string, pos: number }]>} A promise that resolves to an array of objects with word and pos
+   */
+
   getTop100ForLevel: async (level) => {
     const { data } = await baseAPI.request({
       url: `/level/${level}/top100`,

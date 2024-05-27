@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import useMeasure from "react-use-measure";
 import { useSpring, animated } from "@react-spring/web";
 
-const GuessCell = ({ guess, isHighlighted = false }) => {
+const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
   if (guess == null) return null;
 
   const { word, pos } = guess;
@@ -32,12 +32,7 @@ const GuessCell = ({ guess, isHighlighted = false }) => {
     };
 
     return {
-      width: didMount
-        ? Math.max(
-            width * Math.pow(Math.max(percentage, 0.05), exponentialFactor),
-            width * 0.05
-          )
-        : 0,
+      width: didMount ? Math.max(width * Math.pow(Math.max(percentage, 0.05), exponentialFactor), width * 0.05) : 0,
       backgroundColor: didMount ? bgColor(pos) : "#FF4F79",
     };
   };
@@ -53,20 +48,15 @@ const GuessCell = ({ guess, isHighlighted = false }) => {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className={`guessCell_container ${isHighlighted ? "highlighted" : ""}`}
-    >
-      <div className="guessCell">
+    <div ref={ref} className={`guessCell_container ${isHighlighted ? "highlighted" : ""} ${size}`}>
+      <div className={`guessCell ${size}`}>
         <span className="guessCell_word">{word}</span>
 
         {/* Loader */}
         <animated.div className="guessCell_fill" style={props} />
 
         {/* Pos counter */}
-        <animated.div className="guessCell_pos">
-          {props.pos.to((x) => x.toFixed(0))}
-        </animated.div>
+        <animated.div className="guessCell_pos">{props.pos.to((x) => x.toFixed(0))}</animated.div>
       </div>
     </div>
   );
