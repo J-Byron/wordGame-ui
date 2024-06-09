@@ -79,7 +79,11 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  min-width: 400px;
+
+  @media (min-width: 601px) {
+    /* Tablet and larger styles */
+    min-width: 400px;
+  }
 }
 
 .guessCell_container {
@@ -101,6 +105,11 @@ body {
   display: flex;
   justify-content: space-between;
   user-select: all;
+
+  &.sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 12px;
+  }
 }
 
 .guessCell_fill {
@@ -187,7 +196,7 @@ body {
 
 .levelSelectorModal_backdrop {
   background-color: rgba(0, 0, 0, 0.23);
-  position: fixed;
+  position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
@@ -198,6 +207,7 @@ body {
   // transform: translate(-50%, -50%);
   z-index: 2;
 }
+
 .levelSelectorModal_container {
   background-color: $color-bone;
   padding: 1rem;
@@ -208,14 +218,38 @@ body {
   grid-gap: 1rem;
   width: 100%;
   max-width: 400px;
+  max-height: 400px;
+  overflow-y: scroll;
   border-radius: 3px;
-  // border: 10px solid black;
+  scrollbar-width: thin;
+  // position: absolute;/
+}
+
+.modal_wrapper {
+  position: relative;
+  max-width: 400px;
+  width: calc(100vw - 40px);
+}
+
+.modal_closeButton {
+  $size: 20px;
+  background-color: $color-red;
+  position: absolute;
+  color: white;
+  border: none;
+  height: $size;
+  width: $size;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 16px;
+  z-index: 10;
+  right: calc($size / 3 * -1);
+  top: calc($size / 3 * -1);
 }
 
 .levelSelectorModal_cell {
   cursor: pointer;
   position: relative;
-  padding: 3px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -244,7 +278,7 @@ body {
   }
 }
 
-.completedLevelPopup_backdrop {
+.completedLevelmodal_backdrop {
   background-color: rgba(0, 0, 0, 0.23);
   position: fixed;
   top: 0;
@@ -257,10 +291,11 @@ body {
   z-index: 4;
 }
 
-.completedLevelPopup_container {
+.completedLevelmodal_container {
   text-align: center;
   background-color: $color-bone;
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   border-radius: 3px;
   padding: 1rem 0;
   display: flex;
@@ -268,27 +303,27 @@ body {
   justify-content: center;
   font-size: 18px;
 
-  .completedLevelPopup_title {
+  .completedLevelmodal_title {
     font-size: 28px;
     margin-bottom: 0.5rem;
   }
 
-  .completedLevelPopup_word {
+  .completedLevelmodal_word {
     background-color: $color-blue;
     width: 100%;
     color: $color-bone;
     margin-bottom: 0.5rem;
   }
 
-  .completedLevelPopup_statsContainer {
+  .completedLevelmodal_statsContainer {
     margin-bottom: 2rem;
-    .completedLevelPopup_colors {
+    .completedLevelmodal_colors {
       display: flex;
       justify-content: center;
       color: black;
       font-size: 18px;
       font-weight: 700;
-      margin-bottom: 1rem;
+      margin: 1rem;
       > * {
         text-align: center;
         margin: 0.5rem;
@@ -309,20 +344,20 @@ body {
       }
     }
 
-    .completedLevelPopup_closest {
+    .completedLevelmodal_closest {
       cursor: pointer;
     }
   }
 
-  .completedLevelPopup_footer {
+  .completedLevelmodal_footer {
     display: flex;
     justify-content: space-evenly;
 
-    .completedLevelPopup_closeButton {
+    .completedLevelmodal_closeButton {
       padding: 2px 20px;
       cursor: pointer;
     }
-    .completedLevelPopup_nextButton {
+    .completedLevelmodal_nextButton {
       cursor: pointer;
       font-weight: bold;
       color: $color-bone;
@@ -347,10 +382,13 @@ body {
 
   .closestWordList_container {
     border-radius: 3px;
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     height: 600px;
     background-color: $color-bone;
-    overflow: scroll;
+    overflow: hidden;
+    overflow-y: scroll;
+    scrollbar-width: thin;
   }
 }
 .skeleton_container {
@@ -365,6 +403,47 @@ body {
 
   br {
     display: none;
+  }
+}
+
+.countdown {
+  position: absolute;
+  top: -60px;
+  background-color: $color-bone;
+  padding: 15px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.howToPlay_container {
+  text-align: center;
+  background-color: white;
+  border: 3px solid black;
+  border-radius: 3px;
+  padding: 15px;
+  .header {
+    font-size: 24px;
+    font-weight: 700;
+    // text-decoration: underline;
+    margin-bottom: 30px;
+  }
+
+  .howToPlay_step {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 3px;
+    background-color: $color-bone;
+
+    .howToPlay_step_header {
+      font-style: italic;
+      font-size: 20px;
+    }
+    .howToPlay_step_content {
+      font-size: 18px;
+      font-weight: 500;
+    }
   }
 }
 

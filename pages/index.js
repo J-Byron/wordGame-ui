@@ -18,12 +18,13 @@ import { GameAPI } from "api/GameAPI";
 import { RESPONSE_MESSAGE } from "constansts";
 
 import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
+import { HowToPlay } from "@components/HowToPlay";
 
 const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
 const GuessNotification = dynamic(() => import("@components/GuessNotification"));
 const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
 const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
-const CompletedLevelPopup = dynamic(() => import("@components/CompletedLevelPopup"));
+const CompletedLevelmodal = dynamic(() => import("@components/CompletedLevelModal"));
 
 const Main = ({ levels }) => {
   const [gameState, setGameState] = useState({ completedGames: [], games: {} });
@@ -238,7 +239,7 @@ const Main = ({ levels }) => {
       </Head>
       <main>
         {showLevelCompleted && (
-          <CompletedLevelPopup
+          <CompletedLevelmodal
             level={level}
             handleCloseClick={closeLevelCompletedModal}
             handleNextClick={handleNextLevelClick}
@@ -253,6 +254,7 @@ const Main = ({ levels }) => {
             words={closestWords}
             isLoading={isClosestWordsLoading}
             handleClose={closeClosestWordsModal}
+            guesses={gameState.games[level].guesses.map(({ word }) => word)}
           />
         )}
 
@@ -285,9 +287,11 @@ const Main = ({ levels }) => {
           )
         )}
 
+        {gameState.games[level]?.guesses.length == null && <HowToPlay />}
+
         <GuessList
           guesses={gameState.games[level]?.guesses || []}
-          lastGuess={gameState.games[level]?.lastGuess?.word}
+          highlightedWords={[gameState.games[level]?.lastGuess?.word]}
         />
       </main>
     </div>

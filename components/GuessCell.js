@@ -5,6 +5,7 @@ import { useSpring, animated } from "@react-spring/web";
 const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
   if (guess == null) return null;
 
+  // console.log(guess.word, isHighlighted);
   const { word, pos } = guess;
 
   const [didMount, toggle] = useState(false);
