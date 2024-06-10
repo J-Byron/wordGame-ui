@@ -75,13 +75,18 @@ body {
 .guessList {
   margin: 1rem 0;
   width: 100%;
-  // min-width: 370.55px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  max-width: 400px;
+
+  &.md {
+    @media (max-width: 601px) {
+      width: 100vw;
+    }
+  }
 
   @media (min-width: 601px) {
-    /* Tablet and larger styles */
     min-width: 400px;
   }
 }
@@ -157,9 +162,9 @@ body {
 }
 
 .levelSelectorButton_container {
-  width: 60px;
-  height: 60px;
-  background: rgba(183, 183, 183, 0.37) content-box;
+  width: 50px;
+  height: 50px;
+  background: rgba(183, 183, 183, 0.37);
   border: solid 3px rgba(0, 0, 0, 0);
   border-radius: 3px;
   display: flex;
@@ -215,13 +220,11 @@ body {
     [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(20% - 0.8rem)
     [col4] calc(20% - 0.8rem) [col5] calc(20% - 0.8rem);
   grid-gap: 1rem;
-  width: 100%;
   max-width: 400px;
   max-height: 400px;
   overflow-y: scroll;
   border-radius: 3px;
   scrollbar-width: thin;
-  // position: absolute;/
 }
 
 .modal_wrapper {
@@ -250,11 +253,11 @@ body {
   cursor: pointer;
   position: relative;
   display: flex;
+  flex-basis: 1;
   flex-direction: column;
   justify-content: center;
   text-align: center;
   font-weight: 600;
-  background: content-box;
   height: 60px;
   border-radius: 3px;
   border: solid 3px rgba(0, 0, 0, 0);

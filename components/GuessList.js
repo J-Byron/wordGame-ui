@@ -2,7 +2,7 @@ import GuessCell from "./GuessCell";
 
 const GuessList = ({ guesses = [], highlightedWords, size = "md" }) => {
   return (
-    <div className="guessList">
+    <div className={`guessList ${size}`}>
       {guesses.length > 0 &&
         guesses
           .sort((a, b) => a.pos - b.pos)
