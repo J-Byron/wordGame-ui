@@ -235,7 +235,6 @@ const Main = ({ levels }) => {
     <div className="container">
       <Head>
         <title className="title">{`THE WORD - ${level}`}</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
         {showLevelCompleted && (

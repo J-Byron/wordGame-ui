@@ -14,7 +14,6 @@ const CustomErrorPage = ({ statusCode }) => {
     <div className="container">
       <Head>
         <title className="title">{`THE WORD - ${statusCode}`}</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>

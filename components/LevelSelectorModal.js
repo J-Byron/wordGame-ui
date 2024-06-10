@@ -5,21 +5,16 @@ const LevelSelectorModal = ({ levels, handleLevelClick, handleClose }) => {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      // Get current time in UTC
       const now = new Date();
-      // Calculate current time in EST (UTC-5)
-      const estOffset = -5 * 60; // EST is UTC-5
-      const estNow = new Date(now.getTime() + estOffset * 60000);
+      const astOffset = -6 * 60; // AST is UTC-4
+      const astNow = new Date(now.getTime() + astOffset * 60000);
 
-      // Calculate the next day in EST
-      const nextDay = new Date(estNow);
-      nextDay.setDate(estNow.getDate() + 1);
+      const nextDay = new Date(astNow);
+      nextDay.setDate(astNow.getDate() + 1);
       nextDay.setHours(0, 0, 0, 0);
 
-      // Calculate the difference in milliseconds
-      const timeDiff = nextDay - estNow;
+      const timeDiff = nextDay - astNow;
 
-      // Convert the difference to hours, minutes, and seconds
       const hours = Math.floor(timeDiff / (1000 * 60 * 60));
       const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);

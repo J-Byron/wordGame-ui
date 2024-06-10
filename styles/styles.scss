@@ -162,7 +162,6 @@ body {
   background: rgba(183, 183, 183, 0.37) content-box;
   border: solid 3px rgba(0, 0, 0, 0);
   border-radius: 3px;
-  padding: 3px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -417,15 +416,16 @@ body {
 
 .howToPlay_container {
   text-align: center;
+  margin: 0px 15px;
   background-color: white;
   border: 3px solid black;
   border-radius: 3px;
-  padding: 15px;
+  padding: 15px 15px 0 15px;
   .header {
     font-size: 24px;
     font-weight: 700;
     // text-decoration: underline;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
   }
 
   .howToPlay_step {
