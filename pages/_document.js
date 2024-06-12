@@ -5,11 +5,11 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        <script
-          async
+        <Script
+          strategy="afterInteractive"
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY}`}
         />
-        <Script id="google-analytics">
+        <Script id="google-analytics" strategy="afterInteractive">
           {`
              window.dataLayer = window.dataLayer || [];
              function gtag(){dataLayer.push(arguments);}
