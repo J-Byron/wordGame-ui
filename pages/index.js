@@ -40,13 +40,6 @@ const Main = ({ levels }) => {
 
   const guessNotificationContext = useContext(GuessNotificationContext);
 
-  // TODO migrate modal state to this 👇🏼
-  // const [showModals, setShowModals] = useState({
-  //   showLevelCompleted: false,
-  //   showLevelSelector: false,
-  //   showClosestWords: false,
-  // });
-
   useEffect(() => {
     console.log("████████╗██╗░░██╗███████╗  ░██╗░░░░░░░██╗░█████╗░██████╗░██████╗░");
     console.log("╚══██╔══╝██║░░██║██╔════╝  ░██║░░██╗░░██║██╔══██╗██╔══██╗██╔══██╗");
@@ -235,6 +228,11 @@ const Main = ({ levels }) => {
     <div className="container">
       <Head>
         <title className="title">{`THE WORD - ${level}`}</title>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5566603516601048"
+          crossorigin="anonymous"
+        ></script>
       </Head>
       <main>
         {showLevelCompleted && (
