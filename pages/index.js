@@ -9,6 +9,7 @@
 // "use client";
 
 import { useState, useEffect, useContext } from "react";
+import Script from "next/script";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import GuessList from "@components/GuessList";
@@ -228,11 +229,11 @@ const Main = ({ levels }) => {
     <div className="container">
       <Head>
         <title className="title">{`THE WORD - ${level}`}</title>
-        <script
+        <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5566603516601048"
-          crossorigin="anonymous"
-        ></script>
+          crossOrigin="anonymous"
+        />
       </Head>
       <main>
         {showLevelCompleted && (

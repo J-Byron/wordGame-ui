@@ -224,6 +224,7 @@ body {
   max-height: 400px;
   overflow-y: scroll;
   border-radius: 3px;
+  border: 3px solid black;
   scrollbar-width: thin;
 }
 
@@ -247,6 +248,7 @@ body {
   z-index: 10;
   right: calc($size / 3 * -1);
   top: calc($size / 3 * -1);
+  border: 3px solid black;
 }
 
 .levelSelectorModal_cell {
@@ -304,6 +306,7 @@ body {
   flex-direction: column;
   justify-content: center;
   font-size: 18px;
+  border: 3px solid black;
 
   .completedLevelmodal_title {
     font-size: 28px;
@@ -415,6 +418,7 @@ body {
   padding: 15px;
   border-radius: 3px;
   font-weight: 600;
+  border: 3px solid black;
 }
 
 .howToPlay_container {
