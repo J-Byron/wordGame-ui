@@ -66,12 +66,15 @@ const Main = ({ levels }) => {
       const highestIncompleteLevel =
         incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
 
-      setLevel(completedGames.includes(mostRecentLevel) ? highestIncompleteLevel : mostRecentLevel);
+      setLevel(
+        completedGames.includes(mostRecentLevel) || mostRecentLevel == undefined
+          ? highestIncompleteLevel
+          : mostRecentLevel
+      );
     } else {
       setLevel(Math.max(...levels).toString());
+      console.log("B");
     }
-
-    console.log(level);
   }, []);
 
   useEffect(() => {
@@ -304,9 +307,10 @@ const Main = ({ levels }) => {
 
 export default Main;
 
-export async function getStaticProps() {
+// ssp > sp because we want new levels when page is hit and not on build
+export async function getServerSideProps() {
   const { gameNumbers: levels } = await GameAPI.getGames();
   return {
-    props: { levels: levels },
+    props: { levels: [levels].pop() },
   };
 }
