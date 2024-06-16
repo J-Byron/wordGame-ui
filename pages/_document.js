@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from "next/document";
+import Link from "next/link";
 import Script from "next/script";
 
 export default function Document() {
@@ -26,6 +27,9 @@ export default function Document() {
       </Head>
       <body>
         <Main />
+        <Link className="privacy-policy" href="/privacy-policy">
+          Privacy Policy
+        </Link>
         <NextScript />
       </body>
     </Html>

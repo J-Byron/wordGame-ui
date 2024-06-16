@@ -17,6 +17,7 @@ import Input from "@components/Input";
 import GuessCell from "@components/GuessCell";
 import { GameAPI } from "api/GameAPI";
 import { RESPONSE_MESSAGE } from "constansts";
+import pluralize from "pluralize";
 
 import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
 import { HowToPlay } from "@components/HowToPlay";
@@ -69,6 +70,8 @@ const Main = ({ levels }) => {
     } else {
       setLevel(Math.max(...levels).toString());
     }
+
+    console.log(level);
   }, []);
 
   useEffect(() => {
@@ -125,10 +128,11 @@ const Main = ({ levels }) => {
     guessNotificationContext.clear();
 
     // check if word already guessed
-    const previouslyGuessed = gameState.games[level]?.guesses.map(({ word }) => word).includes(word);
+    const singularizedWord = pluralize.singular(word);
+    const previouslyGuessed = gameState.games[level]?.guesses.map(({ word }) => word).includes(singularizedWord);
 
     if (previouslyGuessed) {
-      guessNotificationContext.error(`${word} has already been guessed`);
+      guessNotificationContext.error(`${singularizedWord} has already been guessed`);
     } else {
       try {
         let res;
@@ -287,10 +291,12 @@ const Main = ({ levels }) => {
 
         {gameState.games[level]?.guesses.length == null && <HowToPlay />}
 
-        <GuessList
-          guesses={gameState.games[level]?.guesses || []}
-          highlightedWords={[gameState.games[level]?.lastGuess?.word]}
-        />
+        {gameState.games[level]?.guesses.length && (
+          <GuessList
+            guesses={gameState.games[level]?.guesses || []}
+            highlightedWords={[gameState.games[level]?.lastGuess?.word]}
+          />
+        )}
       </main>
     </div>
   );

@@ -43,6 +43,7 @@ main {
   display: flex;
   flex-direction: column;
   max-width: 400px;
+  min-height: calc(100svh - 135px);
 }
 
 .container {
@@ -452,6 +453,13 @@ body {
       font-weight: 500;
     }
   }
+}
+
+.privacy-policy {
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
 }
 
 @keyframes pulse {
