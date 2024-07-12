@@ -1,11 +1,14 @@
 import "@styles/styles.scss";
 import { GuessNotificationProvider } from "@components/GuessNotification/guessNotificationManager";
+import { SocketProvider } from "@components/Socket/SocketContext";
 
 function Application({ Component, pageProps }) {
   return (
-    <GuessNotificationProvider>
-      <Component {...pageProps} />
-    </GuessNotificationProvider>
+    <SocketProvider>
+      <GuessNotificationProvider>
+        <Component {...pageProps} />
+      </GuessNotificationProvider>
+    </SocketProvider>
   );
 }
 

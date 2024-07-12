@@ -18,7 +18,8 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-loading-skeleton": "^3.4.0",
-    "react-use-measure": "^2.1.1"
+    "react-use-measure": "^2.1.1",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "sass": "^1.77.2"

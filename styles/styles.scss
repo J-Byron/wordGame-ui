@@ -11,6 +11,7 @@ $color-yellow: #ffd900;
 $color-purple: #8338ec;
 $color-gray: #d0d0d0;
 $color-gray-opaque: #b7b7b75e;
+$color-black: #181726;
 
 // Dark mode
 
@@ -39,7 +40,7 @@ body {
 }
 
 main {
-  padding-top: 2rem;
+  padding-top: 15px;
   display: flex;
   flex-direction: column;
   max-width: 400px;
@@ -74,7 +75,7 @@ body {
 }
 
 .guessList {
-  margin: 1rem 0;
+  margin: 15px 0;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -96,7 +97,7 @@ body {
   background-color: $color-gray-opaque;
   width: inherit;
   border-radius: 3px;
-  margin: 0.25rem 1rem;
+  margin: 0.25rem 15px;
   font-weight: 600;
   position: relative;
   overflow: hidden;
@@ -129,7 +130,7 @@ body {
 }
 
 .guessForm_container {
-  margin: 0.25rem 1rem;
+  margin: 0 15px;
 }
 
 *::placeholder {
@@ -147,7 +148,7 @@ body {
   border-radius: 3px;
   border: 0px;
   padding: 0px;
-  margin: 1rem 0;
+  margin: 15px 0;
   width: 100%;
   max-width: 400px;
   text-transform: lowercase;
@@ -215,24 +216,24 @@ body {
 
 .levelSelectorModal_container {
   background-color: $color-bone;
-  padding: 1rem;
+  padding: 15px;
   display: grid;
   grid-template-columns:
     [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(20% - 0.8rem)
     [col4] calc(20% - 0.8rem) [col5] calc(20% - 0.8rem);
-  grid-gap: 1rem;
+  grid-gap: 15px;
   max-width: 400px;
   max-height: 400px;
   overflow-y: scroll;
   border-radius: 3px;
-  border: 3px solid black;
+  border: 3px solid $color-black;
   scrollbar-width: thin;
 }
 
 .modal_wrapper {
   position: relative;
   max-width: 400px;
-  width: calc(100vw - 40px);
+  width: calc(100vw - 20px);
 }
 
 .modal_closeButton {
@@ -249,7 +250,7 @@ body {
   z-index: 10;
   right: calc($size / 3 * -1);
   top: calc($size / 3 * -1);
-  border: 3px solid black;
+  border: 3px solid $color-black;
 }
 
 .levelSelectorModal_cell {
@@ -302,12 +303,12 @@ body {
   width: 100%;
   max-width: 400px;
   border-radius: 3px;
-  padding: 1rem 0;
+  padding: 15px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   font-size: 18px;
-  border: 3px solid black;
+  border: 3px solid $color-black;
 
   .completedLevelmodal_title {
     font-size: 28px;
@@ -326,14 +327,14 @@ body {
     .completedLevelmodal_colors {
       display: flex;
       justify-content: center;
-      color: black;
+      color: $color-black;
       font-size: 18px;
       font-weight: 700;
-      margin: 1rem;
+      margin: 15px;
       > * {
         text-align: center;
         margin: 0.5rem;
-        padding: 1rem;
+        padding: 15px;
         border-radius: 3px;
       }
       > :nth-child(1) {
@@ -398,13 +399,13 @@ body {
   }
 }
 .skeleton_container {
-  margin: 1rem 0;
+  margin: 15px 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 
   .skeleton {
-    margin: 0.25rem 1rem;
+    margin: 0.25rem 15px;
   }
 
   br {
@@ -419,14 +420,14 @@ body {
   padding: 15px;
   border-radius: 3px;
   font-weight: 600;
-  border: 3px solid black;
+  border: 3px solid $color-black;
 }
 
 .howToPlay_container {
   text-align: center;
-  margin: 0px 15px;
+  margin: 15px 15px 0 15px;
   background-color: white;
-  border: 3px solid black;
+  border: 3px solid $color-black;
   border-radius: 3px;
   padding: 15px 15px 0 15px;
   .header {
@@ -460,6 +461,153 @@ body {
   display: flex;
   justify-content: center;
   padding: 10px;
+}
+
+.playWithFriendsModal_backdrop {
+  background-color: rgba(0, 0, 0, 0.23);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 4;
+
+  .playWithFriendsModal_container {
+    border: 3px solid $color-black;
+    border-radius: 3px;
+    width: 100%;
+    max-width: 400px;
+    background-color: $color-bone;
+    overflow: hidden;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    font-size: 18px;
+
+    .playWithFriendsModal_hostButton {
+      cursor: pointer;
+      font-weight: bold;
+      color: $color-bone;
+      padding: 2px 20px;
+      background-color: $color-blue;
+      border-radius: 3px;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 30px;
+    }
+    .playWithFriendsModal_joinButton {
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      color: $color-bone;
+      padding: 2px 20px;
+      background-color: $color-blue;
+      border-radius: 3px;
+      height: 50px;
+    }
+  }
+}
+
+.playWithFriends_button {
+  cursor: pointer;
+  font-weight: bold;
+  color: $color-bone;
+  padding: 2px;
+  background-color: $color-purple;
+  border-radius: 3px;
+  text-align: center;
+  margin: 15px 15px 0 15px;
+}
+
+.hostLayout_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .hostLayout_lobbyHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .hostLayout_lobbyId {
+      font-weight: 600;
+      font-size: 20px;
+      border-radius: 3px;
+      padding: 5px 20px;
+      background-color: $color-gray;
+      margin-left: 15px;
+      cursor: pointer;
+      user-select: text;
+    }
+    .hostLayout_lobbyId_button {
+    }
+  }
+
+  .hostLayout_body {
+    margin: 30px 0;
+    text-align: center;
+
+    .hostLayout_body_player {
+      margin-top: 5px;
+    }
+  }
+  .hostLayout_footer {
+  }
+
+  .hostLayout_startButton {
+    cursor: pointer;
+    font-size: 22px;
+    color: $color-bone;
+    padding: 2px 30px;
+    background-color: $color-blue;
+    border-radius: 3px;
+  }
+}
+
+.joinLayout_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .joinLayout_input {
+    color: #363636;
+    font-size: 20px;
+    line-height: 1.5;
+    font-weight: 600;
+    font-family: "Saira", sans-serif;
+    text-indent: 12px;
+    height: 36px;
+    border-radius: 3px;
+    border: 0px;
+    padding: 0px;
+    margin: 15px 0;
+    width: 100%;
+    max-width: 400px;
+    text-transform: lowercase;
+    &:focus {
+      outline: 3px solid $color-blue; /* Change the outline color to blue (#00f) */
+    }
+  }
+
+  .joinLayout_joinButton {
+    cursor: pointer;
+    font-size: 22px;
+    color: $color-bone;
+    padding: 2px 30px;
+    background-color: $color-blue;
+    border-radius: 3px;
+  }
 }
 
 @keyframes pulse {

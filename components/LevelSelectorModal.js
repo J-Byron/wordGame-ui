@@ -5,16 +5,28 @@ const LevelSelectorModal = ({ levels, handleLevelClick, handleClose }) => {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
+      // Get current time in UTC
       const now = new Date();
-      const astOffset = -6 * 60; // AST is UTC-4
-      const astNow = new Date(now.getTime() + astOffset * 60000);
+      const utcOffset = now.getTimezoneOffset(); // Get current UTC offset in minutes
 
-      const nextDay = new Date(astNow);
-      nextDay.setDate(astNow.getDate() + 1);
-      nextDay.setHours(0, 0, 0, 0);
+      // Calculate current time in EST (UTC-5)
+      const estOffset = -5 * 60; // EST is UTC-5
+      const estNow = new Date(now.getTime() + (utcOffset + estOffset) * 60000);
 
-      const timeDiff = nextDay - astNow;
+      // Set target time for 00:00 EST (which is 05:00 UTC of the next day)
+      const nextMidnight = new Date(estNow);
+      nextMidnight.setUTCHours(5, 0, 0, 0); // Set to 00:00 EST (05:00 UTC)
 
+      // Calculate time difference in milliseconds
+      let timeDiff = nextMidnight - estNow;
+
+      if (timeDiff < 0) {
+        // If current time is already past midnight, move to next day
+        nextMidnight.setUTCDate(nextMidnight.getUTCDate() + 1);
+        timeDiff = nextMidnight - estNow;
+      }
+
+      // Convert time difference to hours, minutes, seconds
       const hours = Math.floor(timeDiff / (1000 * 60 * 60));
       const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);

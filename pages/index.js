@@ -21,6 +21,7 @@ import pluralize from "pluralize";
 
 import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
 import { HowToPlay } from "@components/HowToPlay";
+import { PlayWithFriendsModal } from "@components/PlayWithFriendsModal";
 
 const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
 const GuessNotification = dynamic(() => import("@components/GuessNotification"));
@@ -37,6 +38,7 @@ const Main = ({ levels }) => {
   const [showLevelSelector, setShowLevelSelector] = useState(false);
   const [showLevelCompleted, setShowLevelCompleted] = useState(false);
   const [showClosestWords, setShowClosestWords] = useState(false);
+  const [showPWF, setShowPWF] = useState(false);
 
   const [isClosestWordsLoading, setIsClosestWordsLoading] = useState(false);
 
@@ -173,6 +175,10 @@ const Main = ({ levels }) => {
     setShowClosestWords(false);
   };
 
+  const closePWFModal = () => {
+    setShowPWF(false);
+  };
+
   const handleLevelClick = async (clickedLevel) => {
     if (clickedLevel === "?") {
       const token = await GameAPI.getMysteryToken();
@@ -242,11 +248,14 @@ const Main = ({ levels }) => {
           crossOrigin="anonymous"
         />
       </Head>
+
       <main>
+        {showPWF && <PlayWithFriendsModal handleClose={closePWFModal} />}
+
         {showLevelCompleted && (
           <CompletedLevelmodal
             level={level}
-            handleCloseClick={closeLevelCompletedModal}
+            handleClose={closeLevelCompletedModal}
             handleNextClick={handleNextLevelClick}
             correctWord={gameState.games[level]?.correctWord}
             handleSeeClosestWordsClick={handleSeeClosestWordsClick}
@@ -280,6 +289,11 @@ const Main = ({ levels }) => {
             handleClose={toggleLevelSelectorModal}
           />
         )}
+
+        <div className="playWithFriends_button" onClick={() => setShowPWF(true)}>
+          PLAY WITH FRIENDS
+        </div>
+
         <Input handleSubmit={handleInputSubmit} />
 
         {/* TODO should create a component to dynamically display notification/lastGuess */}
