@@ -33,48 +33,81 @@ export const SocketProvider = ({ children }) => {
       console.error("Connection failed", error);
     });
 
-    newSocket.on("joinedLobby", ({ player, data }) => {
-      console.log();
-      setLobbyData({ ...data });
+    newSocket.on("joined_lobby", ({ lobbyId }) => {
+      // Which lobby?
+      console.log(`Joined lobby ${lobbyId}`);
+      setIsInLobby(true);
+      setLobbyId(lobbyId);
       //   router.push(`/${lobbyId}`);
     });
 
+    newSocket.on("lobby_data", ({ data }) => {
+      console.log("Updating data");
+      setLobbyData({ ...data });
+    });
+
     newSocket.on("disconnect", () => {
-      console.log("Disconnected from server");
-      setSocket(null);
-      setIsConnected(false);
-      setIsInLobby(false);
+      console.log("Someone disconnected");
     });
 
     newSocket.on("lobby_disconnect", ({ player }) => {
       console.log(`${player} Left.`); // notifcation
     });
 
-    newSocket.on("lobbyCreated", ({ lobbyId }) => {
+    newSocket.on("lobby_created", ({ lobbyId }) => {
       console.log("lobby created", lobbyId);
-      console.log("lobby joined", lobbyId);
-      setIsInLobby(true);
-      setLobbyId(lobbyId);
       //   router.push(`/${lobbyId}`);
     });
 
-    newSocket.on("lobby_joinedLobby", ({ player, data }) => {
+    newSocket.on("lobby_client_joined", ({ player }) => {
       console.log(`${player} joined.`); // notification
-      setLobbyData({ ...data });
+    });
+
+    newSocket.on("lobby_client_disconnect", ({ player }) => {
+      console.log(`${player} disconnected`);
     });
 
     return () => {
-      if (players.length > 2) {
-        socket.emit("disconnecting", { lobbyId, socket: socket.id });
-      }
-      newSocket.disconnect();
+      console.log("socket unmount");
+      disconnect();
     };
   }, []);
+
+  const cleanSocketListeners = () => {
+    socket.off("disconnect");
+    socket.off("connect_error");
+    socket.off("joined_lobby");
+    socket.off("lobby_data");
+    socket.off("disconnect");
+    socket.off("lobby_disconnect");
+    socket.off("lobby_created");
+    socket.off("lobby_client_joined");
+    socket.off("lobby_client_disconnect");
+  };
 
   const createLobby = () => {
     if (socket) {
       console.log("...creating lobby");
-      socket.emit("createLobby");
+      socket.emit("create_lobby");
+    } else console.error("Socket not connected");
+  };
+
+  const joinLobby = (lobbyId) => {
+    if (socket) {
+      socket.emit("join_lobby", lobbyId);
+    } else console.error("Socket not connected");
+  };
+
+  const disconnect = () => {
+    if (socket) {
+      socket.emit("client_disconnect", { lobbyId, socketId: socket.id });
+
+      setSocket(null);
+      setIsConnected(false);
+      setIsInLobby(false);
+
+      cleanSocketListeners();
+      socket.disconnect();
     } else console.error("Socket not connected");
   };
 
@@ -82,18 +115,24 @@ export const SocketProvider = ({ children }) => {
     // Clean up socket connection on unmount
     return () => {
       if (socket) {
-        if (lobbyData?.players?.length > 1) {
-          // let other players know you are disconnecting
-          socket.emit("disconnecting", { lobbyId, socket: socket.id });
-        }
-        socket.disconnect();
+        disconnect();
       }
     };
   }, [socket]);
 
   return (
     <SocketContext.Provider
-      value={{ socket, isConnected, startSocket, createLobby, lobbyId, isInLobby, lobbyData: lobbyData }}
+      value={{
+        socket,
+        joinLobby,
+        isConnected,
+        startSocket,
+        createLobby,
+        lobbyId,
+        isInLobby,
+        lobbyData: lobbyData,
+        disconnect,
+      }}
     >
       {children}
     </SocketContext.Provider>

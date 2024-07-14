@@ -296,8 +296,6 @@ const Main = ({ levels }) => {
 
         <Input handleSubmit={handleInputSubmit} />
 
-        {/* TODO should create a component to dynamically display notification/lastGuess */}
-
         {guessNotificationContext.notificationState === "ERROR" ? (
           <GuessNotification />
         ) : (

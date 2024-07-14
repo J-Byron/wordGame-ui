@@ -70,12 +70,32 @@ const HostLayout = () => {
  */
 const JoinLayout = () => {
   const [inputValue, setInputValue] = useState("");
+  const [isValid, setIsValid] = useState(false);
 
-  const handleInputChange = ({ target }) => {
-    setInputValue(target.value);
+  const { joinLobby, isConnected, startSocket } = useSocket();
+
+  useEffect(() => {
+    if (!isConnected) startSocket();
+  }, []);
+
+  const validateInput = (value) => {
+    const regex = /^[A-Za-z0-9]{5}$/;
+    return regex.test(value);
   };
 
-  const handleJoinClick = () => {};
+  const handleChange = (event) => {
+    const { value } = event.target;
+    setInputValue(value);
+    setIsValid(validateInput(value));
+  };
+
+  const handleJoinClick = () => {
+    if (isValid) {
+      joinLobby(inputValue);
+    } else {
+      console.log("Invalid lobbyId");
+    }
+  };
 
   return (
     <div className="joinLayout_container">
@@ -83,7 +103,7 @@ const JoinLayout = () => {
         className="joinLayout_input"
         type="text"
         value={inputValue}
-        onChange={handleInputChange}
+        onChange={handleChange}
         placeholder={`type lobbyId here ...`}
       />
       <div className="joinLayout_joinButton" onClick={handleJoinClick}>
@@ -96,7 +116,7 @@ const JoinLayout = () => {
 export const PlayWithFriendsModal = ({ handleClose }) => {
   const layouts = { main: "main", host: "host", join: "join" };
   const [currentLayout, setCurrentLayout] = useState(layouts.main);
-  const { socket, isConnected } = useSocket();
+  const { socket, isConnected, disconnect } = useSocket();
 
   useEffect(() => {
     if (!isConnected) {
@@ -109,7 +129,7 @@ export const PlayWithFriendsModal = ({ handleClose }) => {
       className="playWithFriendsModal_backdrop"
       onClick={() => {
         handleClose();
-        if (socket) socket.disconnect();
+        if (socket) disconnect();
       }}
     >
       <div className="modal_wrapper">
