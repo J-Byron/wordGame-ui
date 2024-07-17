@@ -9,17 +9,21 @@ import { useSocket } from "./Socket/SocketContext";
  */
 
 // TODO should be LobbyLayout and in its own file because joiners will also see this screen
-const HostLayout = () => {
+const LobbyLayout = () => {
   const [lobbyValue, setLobbyValue] = useState("");
   const [didCopy, setDidCopy] = useState(false);
-  const { isConnected, startSocket, createLobby, lobbyId, isInLobby, lobbyData, socket } = useSocket();
+  const { isConnected, startSocket, createLobby, lobbyId, isInLobby, lobbyData } = useSocket();
 
   useEffect(() => {
-    if (!isConnected) startSocket();
+    if (!isConnected) {
+      console.log("connecting socket");
+      startSocket();
+    }
   }, []);
 
   useEffect(() => {
     if (isConnected && !isInLobby) {
+      console.log("creating");
       createLobby();
     }
   }, [isConnected]);
@@ -27,12 +31,12 @@ const HostLayout = () => {
   const { players } = lobbyData;
 
   return (
-    <div className="hostLayout_container">
+    <div className="lobbyLayout_container">
       {/* LobbyId copy */}
-      <div className="hostLayout_lobbyHeader">
+      <div className="lobbyLayout_lobbyHeader">
         <div>Lobby ID:</div>
         <div
-          className="hostLayout_lobbyId"
+          className="lobbyLayout_lobbyId"
           onClick={() => {
             setDidCopy(true);
             navigator.clipboard.writeText(lobbyId);
@@ -43,23 +47,23 @@ const HostLayout = () => {
       </div>
 
       {/* Players */}
-      <div className="hostLayout_body">
+      <div className="lobbyLayout_body">
         {players?.length >= 1 && (
           <>
-            <div className="hostLayout_body_player">
-              {/* <div className="hostLayout_body_player_icon"></div> */}
-              <div className="hostLayout_body_player_name">{players[0]?.name}</div>
+            <div className="lobbyLayout_body_player">
+              {/* <div className="LobbyLayout_body_player_icon"></div> */}
+              <div className="lobbyLayout_body_player_name">{players[0]?.name}</div>
             </div>
-            <div className="hostLayout_body_player">{players[1]?.name || "Open slot"} </div>
-            <div className="hostLayout_body_player">{players[2]?.name || "Open slot"}</div>
-            <div className="hostLayout_body_player">{players[3]?.name || "Open slot"}</div>
+            <div className="lobbyLayout_body_player">{players[1]?.name || "Open slot"} </div>
+            <div className="lobbyLayout_body_player">{players[2]?.name || "Open slot"}</div>
+            <div className="lobbyLayout_body_player">{players[3]?.name || "Open slot"}</div>
           </>
         )}
       </div>
 
       {/* Navigation ie start, back */}
       <div>
-        <div className="hostLayout_startButton">Start</div>
+        <div className="lobbyLayout_startButton">Start</div>
       </div>
     </div>
   );
@@ -72,11 +76,16 @@ const JoinLayout = () => {
   const [inputValue, setInputValue] = useState("");
   const [isValid, setIsValid] = useState(false);
 
-  const { joinLobby, isConnected, startSocket } = useSocket();
+  const { joinLobby, isConnected, startSocket, lobbyId } = useSocket();
 
   useEffect(() => {
-    if (!isConnected) startSocket();
+    if (!isConnected) {
+      console.log("connecting socket");
+      startSocket();
+    }
   }, []);
+
+  console.log(lobbyId);
 
   const validateInput = (value) => {
     const regex = /^[A-Za-z0-9]{5}$/;
@@ -114,9 +123,9 @@ const JoinLayout = () => {
 };
 
 export const PlayWithFriendsModal = ({ handleClose }) => {
-  const layouts = { main: "main", host: "host", join: "join" };
+  const layouts = { main: "main", lobby: "lobby", join: "join" };
   const [currentLayout, setCurrentLayout] = useState(layouts.main);
-  const { socket, isConnected, disconnect } = useSocket();
+  const { isConnected, disconnect, isInLobby, lobbyId } = useSocket();
 
   useEffect(() => {
     if (!isConnected) {
@@ -124,19 +133,26 @@ export const PlayWithFriendsModal = ({ handleClose }) => {
     }
   }, [isConnected]);
 
+  useEffect(() => {
+    if (isInLobby) {
+      setCurrentLayout(layouts.lobby);
+    }
+  }, [isInLobby]);
+
   return (
     <div
       className="playWithFriendsModal_backdrop"
       onClick={() => {
         handleClose();
-        if (socket) disconnect();
+        console.log("Closing modal");
+        if (isConnected) disconnect();
       }}
     >
       <div className="modal_wrapper">
         <div className="modal_closeButton" />
 
         <div className="playWithFriendsModal_container" onClick={(e) => e.stopPropagation()}>
-          {currentLayout === layouts.host && <HostLayout />}
+          {currentLayout === layouts.lobby && <LobbyLayout />}
           {currentLayout === layouts.join && <JoinLayout />}
 
           {/* <div onClick={toggleJoinLayout}>Join game</div> */}
@@ -145,7 +161,7 @@ export const PlayWithFriendsModal = ({ handleClose }) => {
               <div
                 className="playWithFriendsModal_hostButton"
                 onClick={() => {
-                  setCurrentLayout(layouts.host);
+                  setCurrentLayout(layouts.lobby);
                 }}
               >
                 Host game

@@ -1,17 +1,20 @@
 // socketContext.js
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
-import { io } from "socket.io-client";
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
+import { connect, io } from "socket.io-client";
 
 const SocketContext = createContext();
-
 export const useSocket = () => useContext(SocketContext);
+
+const INACTIVITY_TIMEOUT = 300000 / 5; // 5 minutes
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [lobbyId, setLobbyId] = useState(null); // can be pulled from lobbyData
+  const lobbyRef = useRef(null);
   const [isInLobby, setIsInLobby] = useState(false);
   const [lobbyData, setLobbyData] = useState({ players: [] });
+  const [isManualDisconnect, setIsManualDisconnect] = useState(false);
+  const [inactivityTimeout, setInactivityTimeout] = useState(null);
 
   const delay = (ms) => {
     return new Promise((resolve) => {
@@ -19,14 +22,40 @@ export const SocketProvider = ({ children }) => {
     });
   };
 
-  const startSocket = useCallback(() => {
-    const newSocket = io(process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL);
-    console.log("newsocket created");
-    setSocket(newSocket);
+  const resetInactivityTimeout = useCallback(() => {
+    console.log("ressetting timeout");
+    console.log(isConnected);
+    if (isConnected) {
+      if (inactivityTimeout) {
+        clearTimeout(inactivityTimeout);
+        console.log("clearing");
+      }
+      const timeout = setTimeout(() => {
+        console.log("disconnected due to innactivity");
+        disconnect();
+      }, INACTIVITY_TIMEOUT);
+      setInactivityTimeout(timeout);
+      console.log("setting");
+    }
+  }, [isConnected]);
 
-    newSocket.on("connect", async () => {
+  useEffect(() => {
+    if (isConnected) {
+      resetInactivityTimeout();
+    }
+  }, [isConnected, resetInactivityTimeout]);
+
+  const startSocket = useCallback(() => {
+    const newSocket = io(process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL_WSS, {
+      // pingTimeout: 60000,
+      // pingInterval: 25000,
+      reconnection: false, // Disable automatic reconnection
+    });
+
+    newSocket.on("connect", () => {
       console.log("Connected to server");
       setIsConnected(true);
+      resetInactivityTimeout();
     });
 
     newSocket.on("connect_error", (error) => {
@@ -37,17 +66,14 @@ export const SocketProvider = ({ children }) => {
       // Which lobby?
       console.log(`Joined lobby ${lobbyId}`);
       setIsInLobby(true);
-      setLobbyId(lobbyId);
+      lobbyRef.current = lobbyId;
+      resetInactivityTimeout();
       //   router.push(`/${lobbyId}`);
     });
 
     newSocket.on("lobby_data", ({ data }) => {
       console.log("Updating data");
       setLobbyData({ ...data });
-    });
-
-    newSocket.on("disconnect", () => {
-      console.log("Someone disconnected");
     });
 
     newSocket.on("lobby_disconnect", ({ player }) => {
@@ -59,6 +85,10 @@ export const SocketProvider = ({ children }) => {
       //   router.push(`/${lobbyId}`);
     });
 
+    newSocket.on("lobby_full", (reason) => {
+      console.log(reason);
+    });
+
     newSocket.on("lobby_client_joined", ({ player }) => {
       console.log(`${player} joined.`); // notification
     });
@@ -67,26 +97,19 @@ export const SocketProvider = ({ children }) => {
       console.log(`${player} disconnected`);
     });
 
-    return () => {
-      console.log("socket unmount");
-      disconnect();
-    };
-  }, []);
+    newSocket.on("disconnect_reason", (reason) => {
+      // TODO -> Move to notification
+      console.log(reason);
+      console.log("In disconnect reason");
 
-  const cleanSocketListeners = () => {
-    socket.off("disconnect");
-    socket.off("connect_error");
-    socket.off("joined_lobby");
-    socket.off("lobby_data");
-    socket.off("disconnect");
-    socket.off("lobby_disconnect");
-    socket.off("lobby_created");
-    socket.off("lobby_client_joined");
-    socket.off("lobby_client_disconnect");
-  };
+      disconnect();
+    });
+
+    setSocket(newSocket);
+  }, [resetInactivityTimeout]);
 
   const createLobby = () => {
-    if (socket) {
+    if (socket && isConnected) {
       console.log("...creating lobby");
       socket.emit("create_lobby");
     } else console.error("Socket not connected");
@@ -99,26 +122,22 @@ export const SocketProvider = ({ children }) => {
   };
 
   const disconnect = () => {
+    setLobbyData({ players: [] });
+    setIsConnected(false);
+    setIsInLobby(false);
+
     if (socket) {
-      socket.emit("client_disconnect", { lobbyId, socketId: socket.id });
-
-      setSocket(null);
-      setIsConnected(false);
-      setIsInLobby(false);
-
-      cleanSocketListeners();
+      socket.emit("client_disconnect", { lobbyId: lobbyRef.current, socketId: socket.id });
+      socket.removeAllListeners();
       socket.disconnect();
+      setSocket(null);
+      lobbyRef.current = null;
     } else console.error("Socket not connected");
-  };
 
-  useEffect(() => {
-    // Clean up socket connection on unmount
-    return () => {
-      if (socket) {
-        disconnect();
-      }
-    };
-  }, [socket]);
+    if (inactivityTimeout) {
+      clearTimeout(inactivityTimeout);
+    }
+  };
 
   return (
     <SocketContext.Provider
@@ -128,7 +147,7 @@ export const SocketProvider = ({ children }) => {
         isConnected,
         startSocket,
         createLobby,
-        lobbyId,
+        lobbyId: lobbyRef.current,
         isInLobby,
         lobbyData: lobbyData,
         disconnect,

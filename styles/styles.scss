@@ -529,17 +529,17 @@ body {
   margin: 15px 15px 0 15px;
 }
 
-.hostLayout_container {
+.lobbyLayout_container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  .hostLayout_lobbyHeader {
+  .lobbyLayout_lobbyHeader {
     display: flex;
     justify-content: center;
     align-items: center;
-    .hostLayout_lobbyId {
+    .lobbyLayout_lobbyId {
       font-weight: 600;
       font-size: 20px;
       border-radius: 3px;
@@ -549,22 +549,22 @@ body {
       cursor: pointer;
       user-select: text;
     }
-    .hostLayout_lobbyId_button {
+    .lobbyLayout_lobbyId_button {
     }
   }
 
-  .hostLayout_body {
+  .lobbyLayout_body {
     margin: 30px 0;
     text-align: center;
 
-    .hostLayout_body_player {
+    .lobbyLayout_body_player {
       margin-top: 5px;
     }
   }
-  .hostLayout_footer {
+  .lobbyLayout_footer {
   }
 
-  .hostLayout_startButton {
+  .lobbyLayout_startButton {
     cursor: pointer;
     font-size: 22px;
     color: $color-bone;
