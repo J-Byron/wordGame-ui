@@ -1,4 +1,4 @@
-import { useState, createContext } from "react";
+import { useState, createContext, useContext } from "react";
 
 const GuessNotificationContext = createContext({
   notificationState: null,
@@ -47,5 +47,6 @@ const GuessNotificationProvider = (props) => {
   );
 };
 
+// const SocketContext = createContext();
+export const useGuessNotificationContext = () => useContext(GuessNotificationContext);
 export { GuessNotificationProvider };
-export default GuessNotificationContext;

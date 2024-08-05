@@ -19,7 +19,7 @@ import { GameAPI } from "api/GameAPI";
 import { RESPONSE_MESSAGE } from "constansts";
 import pluralize from "pluralize";
 
-import GuessNotificationContext from "@components/GuessNotification/guessNotificationManager";
+import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationManager";
 import { HowToPlay } from "@components/HowToPlay";
 import { PlayWithFriendsModal } from "@components/PlayWithFriendsModal";
 
@@ -42,7 +42,7 @@ const Main = ({ levels }) => {
 
   const [isClosestWordsLoading, setIsClosestWordsLoading] = useState(false);
 
-  const guessNotificationContext = useContext(GuessNotificationContext);
+  const guessNotificationContext = useGuessNotificationContext();
 
   useEffect(() => {
     console.log("████████╗██╗░░██╗███████╗  ░██╗░░░░░░░██╗░█████╗░██████╗░██████╗░");

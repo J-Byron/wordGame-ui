@@ -572,6 +572,14 @@ body {
     background-color: $color-blue;
     border-radius: 3px;
   }
+
+  .lobbyLayout_guestButton {
+    font-size: 22px;
+    color: $color-black;
+    padding: 2px 30px;
+    background-color: $color-gray;
+    border-radius: 3px;
+  }
 }
 
 .joinLayout_container {

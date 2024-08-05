@@ -8,27 +8,50 @@ import { useSocket } from "./Socket/SocketContext";
  * Start
  */
 
-// TODO should be LobbyLayout and in its own file because joiners will also see this screen
+// TODO should be its own file because joiners will also see this screen
+
 const LobbyLayout = () => {
-  const [lobbyValue, setLobbyValue] = useState("");
   const [didCopy, setDidCopy] = useState(false);
-  const { isConnected, startSocket, createLobby, lobbyId, isInLobby, lobbyData } = useSocket();
+  const {
+    isConnected,
+    startSocket,
+    createLobby,
+    lobbyId,
+    lobbyDetails: { isInLobby },
+    players,
+    isHost,
+    startGame,
+  } = useSocket();
 
   useEffect(() => {
     if (!isConnected) {
-      console.log("connecting socket");
       startSocket();
     }
   }, []);
 
   useEffect(() => {
     if (isConnected && !isInLobby) {
-      console.log("creating");
       createLobby();
     }
   }, [isConnected]);
 
-  const { players } = lobbyData;
+  const footerButton = () => {
+    if (isHost) {
+      return (
+        <div>
+          <div className="lobbyLayout_startButton" onClick={startGame}>
+            Start
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <div className="lobbyLayout_guestButton">Waiting for host ...</div>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="lobbyLayout_container">
@@ -62,9 +85,7 @@ const LobbyLayout = () => {
       </div>
 
       {/* Navigation ie start, back */}
-      <div>
-        <div className="lobbyLayout_startButton">Start</div>
-      </div>
+      {footerButton()}
     </div>
   );
 };
@@ -76,16 +97,18 @@ const JoinLayout = () => {
   const [inputValue, setInputValue] = useState("");
   const [isValid, setIsValid] = useState(false);
 
-  const { joinLobby, isConnected, startSocket, lobbyId } = useSocket();
+  const {
+    joinLobby,
+    isConnected,
+    startSocket,
+    lobbyDetails: { lobbyId },
+  } = useSocket();
 
   useEffect(() => {
     if (!isConnected) {
-      console.log("connecting socket");
       startSocket();
     }
   }, []);
-
-  console.log(lobbyId);
 
   const validateInput = (value) => {
     const regex = /^[A-Za-z0-9]{5}$/;
@@ -125,7 +148,11 @@ const JoinLayout = () => {
 export const PlayWithFriendsModal = ({ handleClose }) => {
   const layouts = { main: "main", lobby: "lobby", join: "join" };
   const [currentLayout, setCurrentLayout] = useState(layouts.main);
-  const { isConnected, disconnect, isInLobby, lobbyId } = useSocket();
+  const {
+    isConnected,
+    disconnect,
+    lobbyDetails: { isInLobby },
+  } = useSocket();
 
   useEffect(() => {
     if (!isConnected) {
