@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSocket } from "./Socket/SocketContext";
+import PlayerLabel from "./Player/PlayerLabel";
 
 /**
  * Create lobby
@@ -16,11 +17,10 @@ const LobbyLayout = () => {
     isConnected,
     startSocket,
     createLobby,
-    lobbyId,
-    lobbyDetails: { isInLobby },
-    players,
+    lobbyDetails: { lobbyId, players, isInLobby },
     isHost,
     startGame,
+    socket,
   } = useSocket();
 
   useEffect(() => {
@@ -72,14 +72,17 @@ const LobbyLayout = () => {
       {/* Players */}
       <div className="lobbyLayout_body">
         {players?.length >= 1 && (
+          // <>
+          //   <div className="lobbyLayout_body_player">{players[0]?.name}</div>
+          //   <div className="lobbyLayout_body_player">{players[1]?.name || "Open slot"}</div>
+          //   <div className="lobbyLayout_body_player">{players[2]?.name || "Open slot"}</div>
+          //   <div className="lobbyLayout_body_player">{players[3]?.name || "Open slot"}</div>
+          // </>
           <>
-            <div className="lobbyLayout_body_player">
-              {/* <div className="LobbyLayout_body_player_icon"></div> */}
-              <div className="lobbyLayout_body_player_name">{players[0]?.name}</div>
-            </div>
-            <div className="lobbyLayout_body_player">{players[1]?.name || "Open slot"} </div>
-            <div className="lobbyLayout_body_player">{players[2]?.name || "Open slot"}</div>
-            <div className="lobbyLayout_body_player">{players[3]?.name || "Open slot"}</div>
+            <PlayerLabel player={players[0]} isCurrentPlayer={players[0]?.socketId == socket.id} />
+            <PlayerLabel player={players[1]} isCurrentPlayer={players[1]?.socketId == socket.id} />
+            <PlayerLabel player={players[2]} isCurrentPlayer={players[2]?.socketId == socket.id} />
+            <PlayerLabel player={players[3]} isCurrentPlayer={players[3]?.socketId == socket.id} />
           </>
         )}
       </div>

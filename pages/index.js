@@ -8,7 +8,7 @@
 
 // "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -304,7 +304,7 @@ const Main = ({ levels }) => {
           )
         )}
 
-        {gameState.games[level]?.guesses.length == null && <HowToPlay />}
+        {!gameState.games[level]?.guesses.length && <HowToPlay />}
 
         {gameState.games[level]?.guesses.length && (
           <GuessList

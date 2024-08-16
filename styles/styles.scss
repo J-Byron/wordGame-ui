@@ -618,6 +618,70 @@ body {
   }
 }
 
+// <div className="playerLabel_container_notEmpty">
+//       <div className="playerLabel_icon">
+//         <PlayerIcon iconId={player.icon} color={player.color} />
+//       </div>
+//       <div className="playerLabel_name">{player.name}</div>
+//       {isCurrentPlayer && <div className="playerLabel_you">You</div>}
+//     </div>
+
+.playerLabel_container_empty {
+  margin-bottom: 15px;
+}
+.playerLabel_container_notEmpty {
+  display: flex;
+  // border: 1px solid black;
+  border-radius: 3px;
+  padding: 7.5px;
+  align-items: center;
+  background-color: white;
+  margin-bottom: 15px;
+  position: relative;
+  .playerLabel_icon {
+    margin: 0 7.5px;
+    height: 20px;
+  }
+  .playerLabel_name {
+    margin: 0 7.5px;
+  }
+  .playerLabel_you {
+    position: absolute;
+    right: -50px;
+    margin: 0 7.5px;
+    color: $color-blue;
+    font-weight: bold;
+  }
+}
+
+.guessCell_wrapper {
+  background-color: white;
+  width: inherit;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  margin: 0.25rem 15px;
+  align-items: center;
+
+  .guessCell_container {
+    width: inherit;
+    border-radius: 0px;
+    margin: 0;
+    background-color: $color-gray-opaque;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+}
+.guessCell_playerIcon {
+  margin: 0 7.5px;
+  height: 20px;
+  width: 20px;
+  // z-index: 50;
+}
 @keyframes pulse {
   0% {
     color: rgb(70, 70, 245);

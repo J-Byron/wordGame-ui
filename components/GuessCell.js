@@ -1,15 +1,22 @@
 import { useState, useEffect } from "react";
 import useMeasure from "react-use-measure";
 import { useSpring, animated } from "@react-spring/web";
+import PlayerIcon from "./Player/PlayerIcon";
+import { useSocket } from "./Socket/SocketContext";
 
 const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
   if (guess == null) return null;
 
-  // console.log(guess.word, isHighlighted);
   const { word, pos } = guess;
 
   const [didMount, toggle] = useState(false);
   const [ref, { width }] = useMeasure();
+  const [player, setPlayer] = useState({ icon: null, color: null });
+
+  const {
+    socket,
+    lobbyDetails: { players },
+  } = useSocket();
 
   //   $color-red: #FF4F79;
   // $color-green: #12CC91;
@@ -47,6 +54,30 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
   useEffect(() => {
     toggle(true);
   }, []);
+
+  if (guess.player) {
+    return (
+      <div className={`guessCell_wrapper ${isHighlighted ? "highlighted" : ""} ${size}`}>
+        <div className="guessCell_playerIcon">
+          <PlayerIcon
+            iconId={players.filter(({ socketId }) => guess.player == socketId)[0]?.icon}
+            color={players.filter(({ socketId }) => guess.player == socketId)[0]?.color}
+          />
+        </div>
+        <div ref={ref} className={`guessCell_container ${isHighlighted ? "highlighted" : ""} ${size}`}>
+          <div className={`guessCell ${size}`}>
+            <span className="guessCell_word">{word}</span>
+
+            {/* Loader */}
+            <animated.div className="guessCell_fill" style={props} />
+
+            {/* Pos counter */}
+            <animated.div className="guessCell_pos">{props.pos.to((x) => x.toFixed(0))}</animated.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={ref} className={`guessCell_container ${isHighlighted ? "highlighted" : ""} ${size}`}>
