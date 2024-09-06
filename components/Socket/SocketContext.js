@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 
 const SocketContext = createContext();
 
-const INACTIVITY_TIMEOUT = 600000; // 10 minutes = 600000 --> 20
+const INACTIVITY_TIMEOUT = 600000 / 2; // 10 minutes = 600000 --> 20
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -30,7 +30,6 @@ export const SocketProvider = ({ children }) => {
         disconnect();
       }, INACTIVITY_TIMEOUT);
 
-      console.log({ timeout });
       setInactivityTimeout(timeout);
     }
 
@@ -83,7 +82,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("error", ({ message }) => {
-        // Todo - notification
+        // TODO - notification
         console.log(message);
       });
 
@@ -114,6 +113,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("lobby_disconnect", ({ player }) => {
+        //TODO
         console.log(`${player} Left.`); // notifcation
       });
 
@@ -125,6 +125,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("lobby_full", (reason) => {
+        //TODO
         console.log(reason);
       });
 
@@ -139,13 +140,17 @@ export const SocketProvider = ({ children }) => {
       newSocket.on("disconnect_reason", (reason) => {
         // TODO -> Move to notification
         console.log(reason);
-        console.log("In disconnect reason");
 
         disconnect();
       });
 
       newSocket.on("client_notFound_guess", ({ word, message }) => {
         console.log(word, message);
+      });
+
+      newSocket.on("client_kicked", ({ message }) => {
+        disconnect();
+        console.log(message);
       });
 
       // ! We would just be updating lobby_data
@@ -201,26 +206,37 @@ export const SocketProvider = ({ children }) => {
     socket.emit("client_guess", { word, lobbyId: lobbyRef.current, level: level, player: socket.id });
   };
 
+  const handleChangeLevel = (level) => {
+    socket.emit("lobby_change_level", { lobbyId: lobbyRef.current, level });
+  };
+
+  const kickPlayer = (player) => {
+    console.log("Kicking player", { player });
+    socket.emit("lobby_kick_player", { socketId: player.socketId });
+  };
+
   return (
     <SocketContext.Provider
       value={{
-        socket,
-        joinLobby,
-        isConnected,
-        startSocket,
-        createLobby,
-        lobbyDetails: {
+        lobbyInfo: {
           levels: lobbyData.levels,
           isInGame: lobbyData.isInGame,
           gameState: lobbyData.gameState,
           isInLobby: lobbyData.isInLobby,
           players: lobbyData.players,
           lobbyId: lobbyRef.current,
+          isHost,
         },
+        socket,
+        joinLobby,
+        isConnected,
+        startSocket,
+        createLobby,
         disconnect,
         startGame,
-        isHost,
         handleGuess,
+        handleChangeLevel,
+        kickPlayer,
       }}
     >
       {children}
@@ -229,13 +245,14 @@ export const SocketProvider = ({ children }) => {
 };
 
 /**
- * @typedef {Object} LobbyDetails
+ * @typedef {Object} lobbyInfo
  * @property {string[]} levels
  * @property {boolean} isInGame
  * @property {string} gameState
  * @property {boolean} isInLobby
  * @property {Object[]} players
  * @property {string} lobbyId
+ * @property {boolean} isHost
  */
 
 /**
@@ -245,11 +262,12 @@ export const SocketProvider = ({ children }) => {
  * @property {boolean} isConnected
  * @property {function} startSocket
  * @property {function} createLobby
- * @property {LobbyDetails} lobbyDetails
+ * @property {lobbyInfo} lobbyInfo
  * @property {function} disconnect
  * @property {function} startGame
- * @property {boolean} isHost
  * @property {function} handleGuess
+ * @property {function} handleChangeLevel
+ * @property {function} kickPlayer
  */
 
 /**

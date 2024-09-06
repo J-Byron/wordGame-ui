@@ -15,10 +15,10 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
 
   const {
     socket,
-    lobbyDetails: { players },
+    lobbyInfo: { players },
   } = useSocket();
 
-  //   $color-red: #FF4F79;
+  // $color-red: #FF4F79;
   // $color-green: #12CC91;
   // $color-yellow: #EDCD1D;
 
@@ -64,7 +64,7 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
             color={players.filter(({ socketId }) => guess.player == socketId)[0]?.color}
           />
         </div>
-        <div ref={ref} className={`guessCell_container ${isHighlighted ? "highlighted" : ""} ${size}`}>
+        <div ref={ref} className={`guessCell_container ${size}`}>
           <div className={`guessCell ${size}`}>
             <span className="guessCell_word">{word}</span>
 

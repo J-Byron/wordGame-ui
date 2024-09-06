@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useSocket } from "./Socket/SocketContext";
 import PlayerLabel from "./Player/PlayerLabel";
+import LobbyModal from "./LobbyModal";
+import { useRouter } from "next/router";
 
 /**
  * Create lobby
@@ -8,90 +10,6 @@ import PlayerLabel from "./Player/PlayerLabel";
  * Invite friends
  * Start
  */
-
-// TODO should be its own file because joiners will also see this screen
-
-const LobbyLayout = () => {
-  const [didCopy, setDidCopy] = useState(false);
-  const {
-    isConnected,
-    startSocket,
-    createLobby,
-    lobbyDetails: { lobbyId, players, isInLobby },
-    isHost,
-    startGame,
-    socket,
-  } = useSocket();
-
-  useEffect(() => {
-    if (!isConnected) {
-      startSocket();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isConnected && !isInLobby) {
-      createLobby();
-    }
-  }, [isConnected]);
-
-  const footerButton = () => {
-    if (isHost) {
-      return (
-        <div>
-          <div className="lobbyLayout_startButton" onClick={startGame}>
-            Start
-          </div>
-        </div>
-      );
-    } else {
-      return (
-        <div>
-          <div className="lobbyLayout_guestButton">Waiting for host ...</div>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div className="lobbyLayout_container">
-      {/* LobbyId copy */}
-      <div className="lobbyLayout_lobbyHeader">
-        <div>Lobby ID:</div>
-        <div
-          className="lobbyLayout_lobbyId"
-          onClick={() => {
-            setDidCopy(true);
-            navigator.clipboard.writeText(lobbyId);
-          }}
-        >
-          {lobbyId}
-        </div>
-      </div>
-
-      {/* Players */}
-      <div className="lobbyLayout_body">
-        {players?.length >= 1 && (
-          // <>
-          //   <div className="lobbyLayout_body_player">{players[0]?.name}</div>
-          //   <div className="lobbyLayout_body_player">{players[1]?.name || "Open slot"}</div>
-          //   <div className="lobbyLayout_body_player">{players[2]?.name || "Open slot"}</div>
-          //   <div className="lobbyLayout_body_player">{players[3]?.name || "Open slot"}</div>
-          // </>
-          <>
-            <PlayerLabel player={players[0]} isCurrentPlayer={players[0]?.socketId == socket.id} />
-            <PlayerLabel player={players[1]} isCurrentPlayer={players[1]?.socketId == socket.id} />
-            <PlayerLabel player={players[2]} isCurrentPlayer={players[2]?.socketId == socket.id} />
-            <PlayerLabel player={players[3]} isCurrentPlayer={players[3]?.socketId == socket.id} />
-          </>
-        )}
-      </div>
-
-      {/* Navigation ie start, back */}
-      {footerButton()}
-    </div>
-  );
-};
 
 /**
  * Connect to lobby
@@ -104,8 +22,10 @@ const JoinLayout = () => {
     joinLobby,
     isConnected,
     startSocket,
-    lobbyDetails: { lobbyId },
+    lobbyInfo: { lobbyId, isInGame },
   } = useSocket();
+
+  const router = useRouter();
 
   useEffect(() => {
     if (!isConnected) {
@@ -128,9 +48,22 @@ const JoinLayout = () => {
     if (isValid) {
       joinLobby(inputValue);
     } else {
+      //TODO
       console.log("Invalid lobbyId");
     }
   };
+
+  useEffect(() => {
+    if (isInGame) {
+      router.push(
+        {
+          pathname: `/${lobbyId}`,
+          query: { fromLobby: true },
+        },
+        `/${lobbyId}`
+      );
+    }
+  }, [isInGame]);
 
   return (
     <div className="joinLayout_container">
@@ -154,7 +87,7 @@ export const PlayWithFriendsModal = ({ handleClose }) => {
   const {
     isConnected,
     disconnect,
-    lobbyDetails: { isInLobby },
+    lobbyInfo: { isInLobby },
   } = useSocket();
 
   useEffect(() => {
@@ -182,7 +115,7 @@ export const PlayWithFriendsModal = ({ handleClose }) => {
         <div className="modal_closeButton" />
 
         <div className="playWithFriendsModal_container" onClick={(e) => e.stopPropagation()}>
-          {currentLayout === layouts.lobby && <LobbyLayout />}
+          {currentLayout === layouts.lobby && <LobbyModal />}
           {currentLayout === layouts.join && <JoinLayout />}
 
           {/* <div onClick={toggleJoinLayout}>Join game</div> */}

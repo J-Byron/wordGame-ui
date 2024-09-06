@@ -45,13 +45,6 @@ const Main = ({ levels }) => {
   const guessNotificationContext = useGuessNotificationContext();
 
   useEffect(() => {
-    console.log("████████╗██╗░░██╗███████╗  ░██╗░░░░░░░██╗░█████╗░██████╗░██████╗░");
-    console.log("╚══██╔══╝██║░░██║██╔════╝  ░██║░░██╗░░██║██╔══██╗██╔══██╗██╔══██╗");
-    console.log("░░░██║░░░███████║█████╗░░  ░╚██╗████╗██╔╝██║░░██║██████╔╝██║░░██║");
-    console.log("░░░██║░░░██╔══██║██╔══╝░░  ░░████╔═████║░██║░░██║██╔══██╗██║░░██║");
-    console.log("░░░██║░░░██║░░██║███████╗  ░░╚██╔╝░╚██╔╝░╚█████╔╝██║░░██║██████╔╝");
-    console.log("░░░╚═╝░░░╚═╝░░╚═╝╚══════╝  ░░░╚═╝░░░╚═╝░░░╚════╝░╚═╝░░╚═╝╚═════╝░");
-
     // Initialize state from localStorage
     let storedGameState = JSON.parse(window.localStorage.getItem("gameState"));
 
@@ -75,7 +68,6 @@ const Main = ({ levels }) => {
       );
     } else {
       setLevel(Math.max(...levels).toString());
-      console.log("B");
     }
   }, []);
 
@@ -219,15 +211,20 @@ const Main = ({ levels }) => {
   };
 
   const getCompletedLevelStats = () => {
-    const { longestColdStreak, currentColdStreak, longestHotStreak, currentHotStreak, guesses } =
-      gameState.games[level]?.completedGameState;
+    const {
+      longestColdStreak,
+      currentColdStreak,
+      longestHotStreak,
+      currentHotStreak,
+      guesses = [],
+    } = gameState.games[level]?.completedGameState;
     const stats = {
       guesses: guesses.length + 1,
       green: guesses.filter((g) => g.pos < 200).length + 1,
       yellow: guesses.filter((g) => g.pos >= 200 && g.pos < 3000).length,
       red: guesses.filter((g) => g.pos >= 3000).length,
-      longestColdStreak: Math.max(currentColdStreak, longestColdStreak),
-      longestHotStreak: Math.max(currentHotStreak, longestHotStreak),
+      longestHotStreak: isNaN(longestHotStreak) ? "N/A" : Math.max(currentHotStreak, longestHotStreak),
+      longestColdStreak: isNaN(longestColdStreak) ? "N/A" : Math.max(currentColdStreak, longestColdStreak),
       percentile: "Coming Soon",
     };
     return stats;
@@ -291,7 +288,7 @@ const Main = ({ levels }) => {
         )}
 
         <div className="playWithFriends_button" onClick={() => setShowPWF(true)}>
-          PLAY WITH FRIENDS
+          Play with friends
         </div>
 
         <Input handleSubmit={handleInputSubmit} />

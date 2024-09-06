@@ -1,30 +1,24 @@
-//* ████████╗██╗░░██╗███████╗  ░██╗░░░░░░░██╗░█████╗░██████╗░██████╗░
-//* ╚══██╔══╝██║░░██║██╔════╝  ░██║░░██╗░░██║██╔══██╗██╔══██╗██╔══██╗
-//* ░░░██║░░░███████║█████╗░░  ░╚██╗████╗██╔╝██║░░██║██████╔╝██║░░██║
-//* ░░░██║░░░██╔══██║██╔══╝░░  ░░████╔═████║░██║░░██║██╔══██╗██║░░██║
-//* ░░░██║░░░██║░░██║███████╗  ░░╚██╔╝░╚██╔╝░╚█████╔╝██║░░██║██████╔╝
-//* ░░░╚═╝░░░╚═╝░░╚═╝╚══════╝  ░░░╚═╝░░░╚═╝░░░╚════╝░╚═╝░░╚═╝╚═════╝░
-//* https://fsymbols.com/generators/carty/
-
 // "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import pluralize from "pluralize";
+import { useRouter } from "next/router";
+
 import GuessList from "@components/GuessList";
 import Input from "@components/Input";
 import GuessCell from "@components/GuessCell";
 import { GameAPI } from "api/GameAPI";
 import { RESPONSE_MESSAGE } from "constansts";
-import pluralize from "pluralize";
 
 import { HowToPlay } from "@components/HowToPlay";
 import { PlayWithFriendsModal } from "@components/PlayWithFriendsModal";
 
 import { useSocket } from "@components/Socket/SocketContext";
 import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationManager";
-import { useRouter } from "next/router";
+import LobbyModal from "@components/LobbyModal";
 
 const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
 const GuessNotification = dynamic(() => import("@components/GuessNotification"));
@@ -32,14 +26,21 @@ const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButto
 const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
 const CompletedLevelmodal = dynamic(() => import("@components/CompletedLevelModal"));
 
-const Main = (props) => {
+const Main = () => {
   const {
-    lobbyDetails: { levels = [], players = [], gameState: { currentLevel, completedGames, games } = {}, lobbyid } = {},
+    lobbyInfo: {
+      isHost,
+      levels = [],
+      players = [],
+      gameState: { currentLevel, completedGames, games } = {},
+      lobbyid,
+    } = {},
     isConnected,
     disconnect,
     handleGuess,
     startSocket,
     socket,
+    handleChangeLevel,
   } = useSocket();
 
   const router = useRouter();
@@ -50,7 +51,7 @@ const Main = (props) => {
   const [showLevelSelector, setShowLevelSelector] = useState(false);
   const [showLevelCompleted, setShowLevelCompleted] = useState(false);
   const [showClosestWords, setShowClosestWords] = useState(false);
-  const [showPWF, setShowPWF] = useState(false);
+  const [showPlayers, setshowPlayers] = useState(false);
 
   const [isClosestWordsLoading, setIsClosestWordsLoading] = useState(false);
 
@@ -81,6 +82,10 @@ const Main = (props) => {
       setShowLevelCompleted(false);
     }
   }, [currentLevel]);
+
+  useEffect(() => {
+    if (completedGames?.includes(currentLevel)) setShowLevelCompleted(true);
+  }, [completedGames]);
 
   // TODO - backend
   // const updateGameStateGuesses = (guess) => {
@@ -135,24 +140,25 @@ const Main = (props) => {
     setShowLevelSelector(!showLevelSelector);
   };
 
-  // const handleLevelClick = async (clickedLevel) => {
-  //   if (clickedLevel === "?") {
-  //     const token = await GameAPI.getMysteryToken();
-  //     setRandomLevelToken(token);
-  //     setGameState({
-  //       ...gameState,
-  //       games: { ...gameState.games, ["?"]: { guesses: [] } },
-  //     });
-  //   } else if (clickedLevel == level && gameState.completedGames.includes(level)) {
-  //     setShowLevelCompleted(true);
-  //   } else {
-  //     setGameState({ ...gameState, mostRecentLevel: clickedLevel });
-  //   }
+  const handleLevelClick = async (clickedLevel) => {
+    // if (clickedLevel === "?") {
+    //   const token = await GameAPI.getMysteryToken();
+    //   setRandomLevelToken(token);
+    //   setGameState({
+    //     ...gameState,
+    //     games: { ...gameState.games, ["?"]: { guesses: [] } },
+    //   });
+    // } else if (clickedLevel == level && gameState.completedGames.includes(level)) {
+    //   setShowLevelCompleted(true);
+    // } else {
+    //   setGameState({ ...gameState, mostRecentLevel: clickedLevel });
+    // }
 
-  //   setLevel(clickedLevel);
-  //   guessNotificationContext.clear();
-  //   toggleLevelSelectorModal();
-  // };
+    // setLevel(clickedLevel);
+    handleChangeLevel(clickedLevel);
+    guessNotificationContext.clear();
+    toggleLevelSelectorModal();
+  };
 
   const closeLevelCompletedModal = () => {
     if (showLevelSelector) setShowLevelSelector(false);
@@ -164,19 +170,17 @@ const Main = (props) => {
   };
 
   const closePWFModal = () => {
-    setShowPWF(false);
+    setshowPlayers(false);
   };
 
-  // const handleNextLevelClick = () => {
-  //   const { completedGames } = gameState;
+  const handleNextLevelClick = () => {
+    const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
+    const highestIncompleteLevel =
+      incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
 
-  //   const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
-  //   const highestIncompleteLevel =
-  //     incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
-
-  //   setShowLevelCompleted(false);
-  //   setLevel(incompleteLevels.length >= 1 ? highestIncompleteLevel : level);
-  // };
+    setShowLevelCompleted(false);
+    handleChangeLevel(incompleteLevels.length >= 1 ? highestIncompleteLevel : level);
+  };
 
   const handleSeeClosestWordsClick = async () => {
     setShowClosestWords(true);
@@ -222,20 +226,28 @@ const Main = (props) => {
       </Head>
 
       <main>
-        {/* TODO - should be 'leave lobby' and 'info' */}
-        {showPWF && <PlayWithFriendsModal handleClose={closePWFModal} />}
-
-        {/* {showLevelCompleted && (
+        {/* TODO - lobbyModal needs to be refactored completeley with playWithFriendsModal */}
+        {showPlayers && (
+          <div className="playWithFriendsModal_backdrop" onClick={() => setshowPlayers(false)}>
+            <div className="modal_wrapper">
+              <div className="modal_closeButton" />
+              <div className="players_container" onClick={(e) => e.stopPropagation()}>
+                <LobbyModal />
+              </div>
+            </div>
+          </div>
+        )}
+        {showLevelCompleted && (
           <CompletedLevelmodal
-            level={level}
+            level={currentLevel}
             handleClose={closeLevelCompletedModal}
             handleNextClick={handleNextLevelClick}
-            correctWord={gameState.games[level]?.correctWord}
+            correctWord={games[currentLevel]?.correctWord}
             handleSeeClosestWordsClick={handleSeeClosestWordsClick}
-            stats={getCompletedLevelStats()}
+            stats={games[currentLevel]?.results}
+            isMultiplayer={true}
           />
-        )} */}
-
+        )}
         {/* {showClosestWords && (
           <ClosestWordList
             words={closestWords}
@@ -244,43 +256,49 @@ const Main = (props) => {
             guesses={gameState.games[level].guesses.map(({ word }) => word)}
           />
         )} */}
-
         <div className="header">
           <h1 className="title">{"THE WORD"}</h1>
-          {/* <LevelSelectorButton
-            level={level}
-            handleClick={toggleLevelSelectorModal}
+          <LevelSelectorButton
+            level={currentLevel}
+            handleClick={() => isHost && toggleLevelSelectorModal()}
             isHighlighted={showLevelSelector}
-            isComplete={gameState.completedGames.includes(level)}
-          /> */}
+            isComplete={completedGames.includes(currentLevel)}
+          />
         </div>
-
-        {/* {showLevelSelector && (
+        {showLevelSelector && (
           <LevelSelectorModal
-            levels={modalLevels}
+            levels={levels.map((l) => ({ level: l, isComplete: completedGames.includes(l) }))}
             handleLevelClick={handleLevelClick}
             handleClose={toggleLevelSelectorModal}
           />
-        )} */}
+        )}
 
-        {/* <div className="playWithFriends_button" onClick={() => setShowPWF(true)}>
-          PLAY WITH FRIENDS
-        </div> */}
+        <div className="lobbyButtons_container">
+          <div className="lobbyButtons_leave" onClick={disconnect}>
+            Leave
+          </div>
+          <div className="lobbyButtons_players" onClick={() => setshowPlayers(true)}>
+            Lobby
+          </div>
+        </div>
 
         <Input handleSubmit={handleInputSubmit} />
-
         {/* {guessNotificationContext.notificationState === "ERROR" ? (
           <GuessNotification />
         ) : (
           games[currentLevel]?.lastGuess && <GuessCell guess={games[currentLevel]?.lastGuess} isHighlighted={true} />
         )} */}
-
-        {games[currentLevel]?.guesses.length == 0 && <HowToPlay />}
-
-        {games[currentLevel]?.guesses.length != 0 && (
+        {games[currentLevel]?.lastGuesses[socket.id] && (
+          <GuessCell
+            guess={{ ...games[currentLevel]?.lastGuesses[socket.id], player: socket.id }}
+            isHighlighted={true}
+          />
+        )}
+        {games[currentLevel]?.guesses.length === 0 && <HowToPlay />}
+        {games[currentLevel]?.guesses.length !== 0 && (
           <GuessList
             guesses={games[currentLevel]?.guesses || []}
-            highlightedWords={[games[currentLevel]?.lastGuess?.word]}
+            highlightedWords={[games[currentLevel]?.lastGuesses[socket.id]?.word]}
           />
         )}
       </main>

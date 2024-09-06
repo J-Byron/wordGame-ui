@@ -62,6 +62,21 @@ const PlayerIcon = ({ iconId, color }) => {
           />
         </svg>
       );
+
+    default:
+      return (
+        <svg width={width} height={height} viewBox="0 0 77 77" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect
+            y="42.5464"
+            width="54.7471"
+            height="54.7471"
+            rx="27.3736"
+            transform="rotate(-51 0 42.5464)"
+            fill="#B3B3B3"
+          />
+          <path d="M18.4912 64.6091L59.1249 12.6004" stroke="#FF4F79" stroke-width="10" stroke-linecap="round" />
+        </svg>
+      );
   }
 };
 

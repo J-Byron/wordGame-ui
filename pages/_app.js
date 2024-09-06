@@ -4,11 +4,11 @@ import { SocketProvider } from "@components/Socket/SocketContext";
 
 function Application({ Component, pageProps }) {
   return (
-    <SocketProvider>
-      <GuessNotificationProvider>
+    <GuessNotificationProvider>
+      <SocketProvider>
         <Component {...pageProps} />
-      </GuessNotificationProvider>
-    </SocketProvider>
+      </SocketProvider>
+    </GuessNotificationProvider>
   );
 }
 

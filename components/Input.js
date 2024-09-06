@@ -90,6 +90,7 @@ const Input = ({ handleSubmit }) => {
   return (
     <div className="guessForm_container">
       <form
+        name="guessForm"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit(inputValue);

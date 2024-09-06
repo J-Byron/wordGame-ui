@@ -1,6 +1,6 @@
 import PlayerIcon from "./PlayerIcon";
 
-const PlayerLabel = ({ player = undefined, isCurrentPlayer }) => {
+const PlayerLabel = ({ player = undefined, isCurrentPlayer, canKick = false, handleKick }) => {
   if (!player) {
     return <div className="playerLabel_container_empty">Open slot</div>;
   }
@@ -12,6 +12,11 @@ const PlayerLabel = ({ player = undefined, isCurrentPlayer }) => {
       </div>
       <div className="playerLabel_name">{player.name}</div>
       {isCurrentPlayer && <div className="playerLabel_you">You</div>}
+      {canKick && !isCurrentPlayer && (
+        <div className="playerLabel_kick" onClick={() => handleKick(player)}>
+          Kick
+        </div>
+      )}
     </div>
   );
 };
