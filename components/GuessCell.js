@@ -11,7 +11,6 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
 
   const [didMount, toggle] = useState(false);
   const [ref, { width }] = useMeasure();
-  const [player, setPlayer] = useState({ icon: null, color: null });
 
   const {
     socket,
@@ -72,7 +71,7 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
             <animated.div className="guessCell_fill" style={props} />
 
             {/* Pos counter */}
-            <animated.div className="guessCell_pos">{props.pos.to((x) => x.toFixed(0))}</animated.div>
+            <animated.div>{props.pos.to((x) => x.toFixed(0))}</animated.div>
           </div>
         </div>
       </div>
@@ -83,10 +82,8 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
     <div ref={ref} className={`guessCell_container ${isHighlighted ? "highlighted" : ""} ${size}`}>
       <div className={`guessCell ${size}`}>
         <span className="guessCell_word">{word}</span>
-
         {/* Loader */}
         <animated.div className="guessCell_fill" style={props} />
-
         {/* Pos counter */}
         <animated.div className="guessCell_pos">{props.pos.to((x) => x.toFixed(0))}</animated.div>
       </div>

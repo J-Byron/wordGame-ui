@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Confetti from "./Confetti";
 import { useSocket } from "./Socket/SocketContext";
 import PlayerLabel from "./Player/PlayerLabel";
+import PlayerStatistics from "./Player/PlayerStatistics";
 
 const CompletedLevelModal = ({
   level,
@@ -12,6 +13,7 @@ const CompletedLevelModal = ({
   stats,
   isMultiplayer = false,
 }) => {
+  console.log("render");
   const [showConfetti, setShowConfetti] = useState(false);
   const {
     socket,
@@ -57,30 +59,37 @@ const CompletedLevelModal = ({
     );
   };
   const multiplayerStats = () => {
-    return players.map((player) => {
-      return (
-        <div className="completedLevelmodal_player">
-          <PlayerLabel player={player} isCurrentPlayer={socket.id === player.socketId} />
-          <div>
-            total guesses: <span className="bold">{stats[player.socketId].guesses}</span>
-          </div>
-          <div className="completedLevelmodal_colors">
-            <div>{stats[player.socketId].green}</div>
-            <div>{stats[player.socketId].yellow}</div>
-            <div>{stats[player.socketId].red}</div>
-          </div>
-          <div>
-            best hot streak : 🔥 <span className="bold">{stats[player.socketId].longestHotStreak}</span>
-          </div>
-          <div>
-            worst cold streak : ❄️ <span className="bold">{stats[player.socketId].longestColdStreak}</span>
-          </div>
-          <div>
-            percentile: <span className="bold">{"Coming Soon"}</span>
-          </div>
-        </div>
-      );
-    });
+    return (
+      <PlayerStatistics
+        statistics={stats[players[0].socketId]}
+        player={players[0]}
+        isCurrentPlayer={socket.id === players[0].socketId}
+      />
+    );
+    // return players.map((player) => {
+    //   return (
+    //     <div className="completedLevelmodal_player">
+    //       <PlayerLabel player={player} isCurrentPlayer={socket.id === player.socketId} />
+    //       <div>
+    //         total guesses: <span className="bold">{stats[player.socketId].guesses}</span>
+    //       </div>
+    //       <div className="completedLevelmodal_colors">
+    //         <div>{stats[player.socketId].green}</div>
+    //         <div>{stats[player.socketId].yellow}</div>
+    //         <div>{stats[player.socketId].red}</div>
+    //       </div>
+    //       <div>
+    //         best hot streak : 🔥 <span className="bold">{stats[player.socketId].longestHotStreak}</span>
+    //       </div>
+    //       <div>
+    //         worst cold streak : ❄️ <span className="bold">{stats[player.socketId].longestColdStreak}</span>
+    //       </div>
+    //       <div>
+    //         percentile: <span className="bold">{"Coming Soon"}</span>
+    //       </div>
+    //     </div>
+    //   );
+    // });
   };
 
   return (

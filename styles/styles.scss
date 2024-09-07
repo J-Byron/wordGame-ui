@@ -40,7 +40,7 @@ body {
 }
 
 main {
-  padding-top: 15px;
+  padding-top: 16px;
   display: flex;
   flex-direction: column;
   max-width: 400px;
@@ -75,7 +75,7 @@ body {
 }
 
 .guessList {
-  margin: 15px 0;
+  margin: 16px 0;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -97,7 +97,7 @@ body {
   background-color: $color-gray-opaque;
   width: inherit;
   border-radius: 3px;
-  margin: 0.25rem 15px;
+  margin: 0.25rem 16px;
   font-weight: 600;
   position: relative;
   overflow: hidden;
@@ -130,7 +130,7 @@ body {
 }
 
 .guessForm_container {
-  margin: 0 15px;
+  margin: 0 16px;
 }
 
 *::placeholder {
@@ -148,7 +148,7 @@ body {
   border-radius: 3px;
   border: 0px;
   padding: 0px;
-  margin: 15px 0;
+  margin: 16px 0;
   width: 100%;
   max-width: 400px;
   text-transform: lowercase;
@@ -216,12 +216,12 @@ body {
 
 .levelSelectorModal_container {
   background-color: $color-bone;
-  padding: 15px;
+  padding: 16px;
   display: grid;
   grid-template-columns:
     [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(20% - 0.8rem)
     [col4] calc(20% - 0.8rem) [col5] calc(20% - 0.8rem);
-  grid-gap: 15px;
+  grid-gap: 16px;
   max-width: 400px;
   max-height: 400px;
   overflow-y: scroll;
@@ -303,7 +303,7 @@ body {
   width: 100%;
   max-width: 400px;
   border-radius: 3px;
-  padding: 15px 0;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -319,7 +319,7 @@ body {
     background-color: $color-blue;
     width: 100%;
     color: $color-bone;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
     border-top: 3px solid $color-black;
     border-bottom: 3px solid $color-black;
     font-size: 20px;
@@ -334,11 +334,11 @@ body {
       color: $color-black;
       font-size: 18px;
       font-weight: 700;
-      margin: 15px;
+      margin: 16px;
       > * {
         text-align: center;
         margin: 0.5rem;
-        padding: 15px;
+        padding: 16px;
         border-radius: 3px;
         width: 20%;
       }
@@ -361,8 +361,8 @@ body {
     }
 
     .completedLevelmodal_player {
-      margin: 15px;
-      padding: 15px;
+      margin: 16px;
+      padding: 16px;
       border-radius: 3px;
     }
   }
@@ -410,13 +410,13 @@ body {
   }
 }
 .skeleton_container {
-  margin: 15px 0;
+  margin: 16px 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 
   .skeleton {
-    margin: 0.25rem 15px;
+    margin: 0.25rem 16px;
   }
 
   br {
@@ -428,7 +428,7 @@ body {
   position: absolute;
   top: -60px;
   background-color: $color-bone;
-  padding: 15px;
+  padding: 16px;
   border-radius: 3px;
   font-weight: 600;
   border: 3px solid $color-black;
@@ -436,23 +436,23 @@ body {
 
 .howToPlay_container {
   text-align: center;
-  margin: 0px 15px 0 15px;
+  margin: 0px 16px 0 16px;
   background-color: white;
   border: 3px solid $color-black;
   border-radius: 3px;
-  padding: 15px 15px 0 15px;
+  padding: 16px 16px 0 16px;
   .header {
     font-size: 24px;
     font-weight: 700;
     // text-decoration: underline;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
   }
 
   .howToPlay_step {
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
-    padding: 15px;
+    margin-bottom: 16px;
+    padding: 16px;
     border-radius: 3px;
     background-color: $color-bone;
 
@@ -536,7 +536,7 @@ body {
   background-color: $color-purple;
   border-radius: 3px;
   text-align: center;
-  margin: 15px 15px 0 15px;
+  margin: 16px 16px 0 16px;
 }
 
 .lobbyModal_container {
@@ -555,7 +555,7 @@ body {
       border-radius: 3px;
       padding: 5px 20px;
       background-color: $color-gray;
-      margin-left: 15px;
+      margin-left: 16px;
       cursor: pointer;
       user-select: text;
     }
@@ -609,7 +609,7 @@ body {
     border-radius: 3px;
     border: 0px;
     padding: 0px;
-    margin: 15px 0;
+    margin: 16px 0;
     width: 100%;
     max-width: 400px;
     text-transform: lowercase;
@@ -637,7 +637,7 @@ body {
 //     </div>
 
 .playerLabel_container_empty {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 .playerLabel_container_notEmpty {
   display: flex;
@@ -646,7 +646,7 @@ body {
   padding: 7.5px;
   align-items: center;
   background-color: white;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   position: relative;
   .playerLabel_icon {
     margin: 0 7.5px;
@@ -681,7 +681,7 @@ body {
   overflow: hidden;
   z-index: 1;
   display: flex;
-  margin: 0.25rem 15px;
+  margin: 0.25rem 16px;
   align-items: center;
 
   &.highlighted {
@@ -721,7 +721,7 @@ body {
     background-color: $color-red;
     border-radius: 3px;
     text-align: center;
-    margin: 15px 15px 0 15px;
+    margin: 16px 16px 0 16px;
   }
   .lobbyButtons_players {
     flex-grow: 8;
@@ -732,7 +732,7 @@ body {
     background-color: $color-purple;
     border-radius: 3px;
     text-align: center;
-    margin: 15px 15px 0 0px;
+    margin: 16px 16px 0 0px;
   }
 }
 
@@ -749,6 +749,49 @@ body {
   align-items: center;
   padding: 30px 30px 0px;
   font-size: 18px;
+}
+
+.playerStats_container {
+  padding: 16px;
+
+  .playerStats_header {
+    display: flex;
+
+    .playerStats_guesses {
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $color-blue;
+    }
+  }
+}
+.playerStatsCell_container {
+  background-color: $color-gray-opaque;
+  width: inherit;
+  border-radius: 3px;
+  margin: 0.25rem 0;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  .playerStatsCell {
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: center;
+    user-select: all;
+    .playerStatsCell_text {
+      display: flex;
+    }
+    .playerStatsCell_fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  }
 }
 @keyframes pulse {
   0% {
