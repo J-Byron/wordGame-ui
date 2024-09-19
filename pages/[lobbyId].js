@@ -11,22 +11,25 @@ import GuessList from "@components/GuessList";
 import Input from "@components/Input";
 import GuessCell from "@components/GuessCell";
 import { GameAPI } from "api/GameAPI";
-import { RESPONSE_MESSAGE } from "constansts";
 
 import { HowToPlay } from "@components/HowToPlay";
-import { PlayWithFriendsModal } from "@components/PlayWithFriendsModal";
 
 import { useSocket } from "@components/Socket/SocketContext";
 import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationManager";
 import LobbyModal from "@components/LobbyModal";
+import LoadingScreen from "@components/LoadingScreen";
 
-const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
-const GuessNotification = dynamic(() => import("@components/GuessNotification"));
+// const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
 const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
 const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
 const CompletedLevelmodal = dynamic(() => import("@components/CompletedLevelModal"));
 
-const Main = () => {
+const validateLobbyId = (value) => {
+  const regex = /^[A-Za-z0-9]{5}$/;
+  return regex.test(value);
+};
+
+const Main = ({ lobbyId: urlLobbyId }) => {
   const {
     lobbyInfo: {
       isHost,
@@ -34,6 +37,7 @@ const Main = () => {
       players = [],
       gameState: { currentLevel, completedGames, games } = {},
       lobbyid,
+      isInGame,
     } = {},
     isConnected,
     disconnect,
@@ -41,12 +45,14 @@ const Main = () => {
     startSocket,
     socket,
     handleChangeLevel,
+    joinLobby,
   } = useSocket();
 
   const router = useRouter();
 
   const [randomLevelToken, setRandomLevelToken] = useState(null);
   const [closestWords, setClosestWords] = useState([]);
+  const [joinedFromUrl, setJoinedFromUrl] = useState(false);
 
   const [showLevelSelector, setShowLevelSelector] = useState(false);
   const [showLevelCompleted, setShowLevelCompleted] = useState(false);
@@ -58,22 +64,37 @@ const Main = () => {
   const guessNotificationContext = useGuessNotificationContext();
 
   useEffect(() => {
-    // TODO handle join lobby from url directly
+    console.log("mount");
     if (!isConnected) {
-      console.error("JOINED FROM URL");
-      /**
-       * Start socket
-       * Validate lobby id - notification on failure
-       * join lobby - ensure not full
-       */
-      // startSocket();
-      router.push("/");
+      // Joined from URL
+      if (!validateLobbyId(urlLobbyId)) {
+        router.push("/");
+      } else {
+        setJoinedFromUrl(true);
+        startSocket();
+      }
     }
 
-    return () => {
+    const handleBeforeUnload = () => {
       disconnect();
     };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
+
+  useEffect(() => {
+    if (socket && isConnected && joinedFromUrl) {
+      if (validateLobbyId(urlLobbyId)) {
+        joinLobby(urlLobbyId);
+      } else {
+        router.push("/");
+      }
+    }
+  }, [socket, isConnected]);
 
   useEffect(() => {
     if (Array.isArray(completedGames) && completedGames.includes(currentLevel)) {
@@ -85,26 +106,11 @@ const Main = () => {
 
   useEffect(() => {
     if (completedGames?.includes(currentLevel)) setShowLevelCompleted(true);
-  }, [completedGames]);
+  }, [completedGames?.length]);
 
-  // TODO - backend
-  // const updateGameStateGuesses = (guess) => {
-  //   [level]: {
-  //     lastGuess: { ...guess, guesseId: null },
-  //     currentColdStreak: pos > prevGuess?.pos ? prevColdStreak + 1 : 0,
-  //     currentHotStreak: pos < prevGuess?.pos ? prevHotStreak + 1 : 0,
-  //     longestColdStreak: Math.max(prevColdStreak, gameState.games[level]?.longestColdStreak) || 0,
-  //     longestHotStreak: Math.max(prevHotStreak, gameState.games[level]?.longestHotStreak) || 0,
-  //     guesses: [...(gameState.games[level] != undefined ? gameState.games[level]?.guesses : []), guess],
-  //     correctWord: pos == 0 ? word : gameState.games[level]?.correctWord,
-  //     // if already complete, use complete, otherwise if pos == 0 set complete, otherwise null
-  //     completedGameState: gameState.games[level]?.completedGameState
-  //       ? gameState.games[level].completedGameState
-  //       : pos == 0
-  //       ? { ...gameState.games[level] }
-  //       : null,
-  //   }
-  // };
+  if (!isConnected) {
+    return <LoadingScreen />;
+  }
 
   const handleInputSubmit = (word) => {
     guessNotificationContext.clear();
@@ -117,20 +123,6 @@ const Main = () => {
       guessNotificationContext.error(`${singularizedWord} has already been guessed`);
     } else {
       handleGuess(word, currentLevel);
-      // try {
-      //   let res = await GameAPI.getWordPosForGame(word, level);
-      //   updateGameStateGuesses(res);
-      // } catch ({ reason, word }) {
-      //   // * We cannot handle the error in the gameAPI because the notification context is only available in this file.
-      //   // * Perhaps there is a way to create the game api as a react component? Unlikely
-      //   switch (reason) {
-      //     case RESPONSE_MESSAGE.incorrectGuess:
-      //       guessNotificationContext.error(`I'm sorry, I don't know this word`);
-      //       break;
-      //     default:
-      //       guessNotificationContext.error(`Error occurred`);
-      //   }
-      // }
     }
   };
 
@@ -155,8 +147,13 @@ const Main = () => {
     // }
 
     // setLevel(clickedLevel);
-    handleChangeLevel(clickedLevel);
-    guessNotificationContext.clear();
+
+    if (clickedLevel == currentLevel && completedGames.includes(clickedLevel)) {
+      setShowLevelCompleted(true);
+    } else {
+      handleChangeLevel(clickedLevel);
+      guessNotificationContext.clear();
+    }
     toggleLevelSelectorModal();
   };
 
@@ -191,27 +188,6 @@ const Main = () => {
     setClosestWords(words);
   };
 
-  // TODO - backend
-  // const getCompletedLevelStats = () => {
-  //   const { longestColdStreak, currentColdStreak, longestHotStreak, currentHotStreak, guesses } =
-  //     gameState.games[level]?.completedGameState;
-  //   const stats = {
-  //     guesses: guesses.length + 1,
-  //     green: guesses.filter((g) => g.pos < 200).length + 1,
-  //     yellow: guesses.filter((g) => g.pos >= 200 && g.pos < 3000).length,
-  //     red: guesses.filter((g) => g.pos >= 3000).length,
-  //     longestColdStreak: Math.max(currentColdStreak, longestColdStreak),
-  //     longestHotStreak: Math.max(currentHotStreak, longestHotStreak),
-  //     percentile: "Coming Soon",
-  //   };
-  //   return stats;
-  // };
-
-  // const modalLevels = gameState.levels.map((level) => ({
-  //   level,
-  //   isComplete: gameState.completedGames.includes(level),
-  // }));
-
   if (!isConnected) return null;
 
   return (
@@ -225,30 +201,30 @@ const Main = () => {
         />
       </Head>
 
-      <main>
-        {/* TODO - lobbyModal needs to be refactored completeley with playWithFriendsModal */}
-        {showPlayers && (
-          <div className="playWithFriendsModal_backdrop" onClick={() => setshowPlayers(false)}>
-            <div className="modal_wrapper">
-              <div className="modal_closeButton" />
-              <div className="players_container" onClick={(e) => e.stopPropagation()}>
-                <LobbyModal />
+      {isConnected && isInGame && (
+        <main>
+          {showPlayers && (
+            <div className="playWithFriendsModal_backdrop" onClick={() => setshowPlayers(false)}>
+              <div className="modal_wrapper">
+                <div className="modal_closeButton" />
+                <div className="players_container" onClick={(e) => e.stopPropagation()}>
+                  <LobbyModal />
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        {showLevelCompleted && (
-          <CompletedLevelmodal
-            level={currentLevel}
-            handleClose={closeLevelCompletedModal}
-            handleNextClick={handleNextLevelClick}
-            correctWord={games[currentLevel]?.correctWord}
-            handleSeeClosestWordsClick={handleSeeClosestWordsClick}
-            stats={games[currentLevel]?.results}
-            isMultiplayer={true}
-          />
-        )}
-        {/* {showClosestWords && (
+          )}
+          {showLevelCompleted && (
+            <CompletedLevelmodal
+              level={currentLevel}
+              handleClose={closeLevelCompletedModal}
+              handleNextClick={handleNextLevelClick}
+              correctWord={games[currentLevel]?.correctWord}
+              handleSeeClosestWordsClick={handleSeeClosestWordsClick}
+              stats={games[currentLevel]?.results}
+              isMultiplayer={true}
+            />
+          )}
+          {/* {showClosestWords && (
           <ClosestWordList
             words={closestWords}
             isLoading={isClosestWordsLoading}
@@ -256,54 +232,67 @@ const Main = () => {
             guesses={gameState.games[level].guesses.map(({ word }) => word)}
           />
         )} */}
-        <div className="header">
-          <h1 className="title">{"THE WORD"}</h1>
-          <LevelSelectorButton
-            level={currentLevel}
-            handleClick={() => isHost && toggleLevelSelectorModal()}
-            isHighlighted={showLevelSelector}
-            isComplete={completedGames.includes(currentLevel)}
-          />
-        </div>
-        {showLevelSelector && (
-          <LevelSelectorModal
-            levels={levels.map((l) => ({ level: l, isComplete: completedGames.includes(l) }))}
-            handleLevelClick={handleLevelClick}
-            handleClose={toggleLevelSelectorModal}
-          />
-        )}
-
-        <div className="lobbyButtons_container">
-          <div className="lobbyButtons_leave" onClick={disconnect}>
-            Leave
+          <div className="header">
+            <h1 className="title">{"THE WORD"}</h1>
+            <LevelSelectorButton
+              level={currentLevel}
+              handleClick={() => isHost && toggleLevelSelectorModal()}
+              isHighlighted={showLevelSelector}
+              isComplete={completedGames.includes(currentLevel)}
+            />
           </div>
-          <div className="lobbyButtons_players" onClick={() => setshowPlayers(true)}>
-            Lobby
-          </div>
-        </div>
+          {showLevelSelector && (
+            <LevelSelectorModal
+              levels={levels.map((l) => ({ level: l, isComplete: completedGames.includes(l) }))}
+              handleLevelClick={handleLevelClick}
+              handleClose={toggleLevelSelectorModal}
+            />
+          )}
 
-        <Input handleSubmit={handleInputSubmit} />
-        {/* {guessNotificationContext.notificationState === "ERROR" ? (
+          <div className="lobbyButtons_container">
+            <div className="lobbyButtons_leave" onClick={disconnect}>
+              Leave
+            </div>
+            <div className="lobbyButtons_players" onClick={() => setshowPlayers(true)}>
+              Players
+            </div>
+          </div>
+
+          <Input handleSubmit={handleInputSubmit} />
+          {/* {guessNotificationContext.notificationState === "ERROR" ? (
           <GuessNotification />
         ) : (
           games[currentLevel]?.lastGuess && <GuessCell guess={games[currentLevel]?.lastGuess} isHighlighted={true} />
         )} */}
-        {games[currentLevel]?.lastGuesses[socket.id] && (
-          <GuessCell
-            guess={{ ...games[currentLevel]?.lastGuesses[socket.id], player: socket.id }}
-            isHighlighted={true}
-          />
-        )}
-        {games[currentLevel]?.guesses.length === 0 && <HowToPlay />}
-        {games[currentLevel]?.guesses.length !== 0 && (
-          <GuessList
-            guesses={games[currentLevel]?.guesses || []}
-            highlightedWords={[games[currentLevel]?.lastGuesses[socket.id]?.word]}
-          />
-        )}
-      </main>
+          {games[currentLevel]?.lastGuesses[socket.id] && (
+            <GuessCell
+              guess={{ ...games[currentLevel]?.lastGuesses[socket.id], player: socket.id }}
+              isHighlighted={true}
+            />
+          )}
+          {games[currentLevel]?.guesses.length === 0 && <HowToPlay />}
+          {games[currentLevel]?.guesses.length !== 0 && (
+            <GuessList
+              guesses={games[currentLevel]?.guesses || []}
+              highlightedWords={[games[currentLevel]?.lastGuesses[socket.id]?.word]}
+            />
+          )}
+        </main>
+      )}
     </div>
   );
 };
 
 export default Main;
+
+export async function getServerSideProps(context) {
+  const { lobbyId } = context.params;
+
+  // You can fetch data here based on the lobbyId if needed
+
+  return {
+    props: {
+      lobbyId, // Pass the lobbyId as a prop to the page
+    },
+  };
+}

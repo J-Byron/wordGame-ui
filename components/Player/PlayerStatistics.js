@@ -57,8 +57,8 @@ const PlayerStatistics = ({ player, statistics, isCurrentPlayer }) => {
   return (
     <div className="playerStats_container">
       <div className="playerStats_header">
-        <PlayerLabel player={player} isCurrentPlayer={isCurrentPlayer} />
-        <div className="playerStats_guesses">{totalGuesses} guesses</div>
+        <PlayerLabel player={player} isCurrentPlayer={isCurrentPlayer} marginBottom={false} />
+        <div className="playerStats_guesses">{totalGuesses} guess(es)</div>
       </div>
       <div>
         {/* GREEN */}

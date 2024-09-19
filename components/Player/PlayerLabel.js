@@ -1,12 +1,15 @@
 import PlayerIcon from "./PlayerIcon";
 
-const PlayerLabel = ({ player = undefined, isCurrentPlayer, canKick = false, handleKick }) => {
+const PlayerLabel = ({ player = undefined, isCurrentPlayer, canKick = false, handleKick, marginBottom = true }) => {
   if (!player) {
     return <div className="playerLabel_container_empty">Open slot</div>;
   }
 
   return (
-    <div className="playerLabel_container_notEmpty">
+    <div
+      className={`playerLabel_container_notEmpty ${marginBottom ? "marginBottom" : ""}`}
+      style={{ border: `3px solid #${player.color}` }}
+    >
       <div className="playerLabel_icon">
         <PlayerIcon iconId={player.icon} color={player.color} />
       </div>

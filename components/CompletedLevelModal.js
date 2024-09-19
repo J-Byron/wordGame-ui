@@ -13,11 +13,10 @@ const CompletedLevelModal = ({
   stats,
   isMultiplayer = false,
 }) => {
-  console.log("render");
   const [showConfetti, setShowConfetti] = useState(false);
   const {
     socket,
-    lobbyInfo: { players },
+    lobbyInfo: { players, isHost },
   } = useSocket();
 
   const toggleConfetti = () => setShowConfetti(!showConfetti);
@@ -36,8 +35,6 @@ const CompletedLevelModal = ({
     const { guesses, green, yellow, red, longestColdStreak, longestHotStreak, percentile } = stats;
     return (
       <>
-        {/* <span>stats</span> */}
-        {/* Line, total guesses, green, yellow, red, longest streak, share  */}
         <div>
           total guesses: <span className="bold">{guesses}</span>
         </div>
@@ -59,37 +56,16 @@ const CompletedLevelModal = ({
     );
   };
   const multiplayerStats = () => {
-    return (
-      <PlayerStatistics
-        statistics={stats[players[0].socketId]}
-        player={players[0]}
-        isCurrentPlayer={socket.id === players[0].socketId}
-      />
-    );
-    // return players.map((player) => {
-    //   return (
-    //     <div className="completedLevelmodal_player">
-    //       <PlayerLabel player={player} isCurrentPlayer={socket.id === player.socketId} />
-    //       <div>
-    //         total guesses: <span className="bold">{stats[player.socketId].guesses}</span>
-    //       </div>
-    //       <div className="completedLevelmodal_colors">
-    //         <div>{stats[player.socketId].green}</div>
-    //         <div>{stats[player.socketId].yellow}</div>
-    //         <div>{stats[player.socketId].red}</div>
-    //       </div>
-    //       <div>
-    //         best hot streak : 🔥 <span className="bold">{stats[player.socketId].longestHotStreak}</span>
-    //       </div>
-    //       <div>
-    //         worst cold streak : ❄️ <span className="bold">{stats[player.socketId].longestColdStreak}</span>
-    //       </div>
-    //       <div>
-    //         percentile: <span className="bold">{"Coming Soon"}</span>
-    //       </div>
-    //     </div>
-    //   );
-    // });
+    return players.map((player) => {
+      return (
+        <PlayerStatistics
+          key={player.socketId}
+          statistics={stats[player.socketId]}
+          player={player}
+          isCurrentPlayer={socket.id === player.socketId}
+        />
+      );
+    });
   };
 
   return (
@@ -109,14 +85,16 @@ const CompletedLevelModal = ({
             <div className="completedLevelmodal_statsContainer">
               {isMultiplayer ? multiplayerStats() : singlePlayerStats()}
             </div>
-            <div className="completedLevelmodal_footer">
-              <div className="completedLevelmodal_closeButton" onClick={handleClose}>
-                Close
+            {isHost && (
+              <div className="completedLevelmodal_footer">
+                <div className="completedLevelmodal_closeButton" onClick={handleClose}>
+                  Close
+                </div>
+                <div className="completedLevelmodal_nextButton" onClick={handleNextClick}>
+                  Next
+                </div>
               </div>
-              <div className="completedLevelmodal_nextButton" onClick={handleNextClick}>
-                Next
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

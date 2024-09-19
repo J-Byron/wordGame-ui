@@ -37,6 +37,7 @@ body {
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
 }
 
 main {
@@ -72,6 +73,10 @@ body {
   font-size: $font-size-lg;
   text-align: center;
   margin: 0px;
+}
+
+.marginBottom {
+  margin-bottom: 16px;
 }
 
 .guessList {
@@ -327,6 +332,9 @@ body {
   }
 
   .completedLevelmodal_statsContainer {
+    max-height: 450px;
+    overflow: hidden;
+    overflow-y: scroll;
     margin-bottom: 2rem;
     .completedLevelmodal_colors {
       display: flex;
@@ -425,13 +433,15 @@ body {
 }
 
 .countdown {
-  position: absolute;
-  top: -60px;
   background-color: $color-bone;
-  padding: 16px;
   border-radius: 3px;
-  font-weight: 600;
   border: 3px solid $color-black;
+  font-weight: 600;
+  padding: 12px;
+  position: absolute;
+  text-align: center;
+  top: -64px;
+  width: 105px;
 }
 
 .howToPlay_container {
@@ -544,6 +554,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 400px;
 
   .lobbyModal_lobbyHeader {
     display: flex;
@@ -559,19 +570,17 @@ body {
       cursor: pointer;
       user-select: text;
     }
-    .lobbyModal_lobbyId_button {
-    }
   }
 
   .lobbyModal_body {
-    margin: 30px 0;
+    margin: 32px 0 16px 0;
     text-align: center;
+    font-weight: 600;
+    min-width: 150px;
 
     .lobbyModal_body_player {
       margin-top: 5px;
     }
-  }
-  .lobbyModal_footer {
   }
 
   .lobbyModal_startButton {
@@ -638,15 +647,17 @@ body {
 
 .playerLabel_container_empty {
   margin-bottom: 16px;
+  padding: 7.5px;
+  background-color: white;
+  border-radius: 3px;
+  color: #696969;
 }
 .playerLabel_container_notEmpty {
   display: flex;
-  // border: 1px solid black;
   border-radius: 3px;
   padding: 7.5px;
   align-items: center;
   background-color: white;
-  margin-bottom: 16px;
   position: relative;
   .playerLabel_icon {
     margin: 0 7.5px;
@@ -657,7 +668,7 @@ body {
   }
   .playerLabel_you {
     position: absolute;
-    right: -50px;
+    right: -60px;
     margin: 0 7.5px;
     color: $color-blue;
     font-weight: bold;
@@ -666,7 +677,7 @@ body {
   .playerLabel_kick {
     cursor: pointer;
     position: absolute;
-    right: -56px;
+    right: -66px;
     margin: 0 7.5px;
     color: $color-red;
     font-weight: bold;
@@ -753,16 +764,23 @@ body {
 
 .playerStats_container {
   padding: 16px;
+  * {
+    user-select: none;
+    pointer-events: none;
+  }
 
   .playerStats_header {
     display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
 
     .playerStats_guesses {
       padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: $color-blue;
+      // background-color: $color-blue;
+      font-weight: 600;
     }
   }
 }
@@ -780,7 +798,9 @@ body {
     display: flex;
     justify-content: center;
     user-select: all;
+    height: 20px;
     .playerStatsCell_text {
+      font-size: 12px;
       display: flex;
     }
     .playerStatsCell_fill {

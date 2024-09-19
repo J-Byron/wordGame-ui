@@ -7,6 +7,19 @@ const SocketContext = createContext();
 
 const INACTIVITY_TIMEOUT = 600000 / 2; // 10 minutes = 600000 --> 20
 
+/**
+ * @typedef {Object} LobbyData
+ * @property {Array} players - List of players in the lobby
+ * @property {Array} levels - List of available levels
+ * @property {boolean} isInGame - Whether the game has started
+ * @property {string} gameState - Current state of the game
+ */
+
+/**
+ * Provider component for socket-related functionality
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ */
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -20,6 +33,9 @@ export const SocketProvider = ({ children }) => {
   const lobbyRef = useRef(null);
   const router = useRouter();
 
+  /**
+   * Resets the inactivity timeout
+   */
   const resetInactivityTimeout = useCallback(() => {
     if (isConnected) {
       if (inactivityTimeout) {
@@ -62,19 +78,32 @@ export const SocketProvider = ({ children }) => {
     }
   }, [socket]);
 
+  /**
+   * Initializes the socket connection
+   * @param {string|null} fromUrl - The URL to connect from, if any
+   */
   const startSocket = useCallback(
-    (fromUrl = false) => {
+    (fromUrl = null) => {
       const newSocket = io(process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL_WSS, {
         // pingTimeout: 60000,
         // pingInterval: 25000,
-        reconnection: false, // Disable automatic reconnection
         "sync disconnect on unload": true,
+        reconnection: false, // Disable automatic reconnection
       });
 
       newSocket.on("connect", () => {
         console.log("Connected to server");
         setIsConnected(true);
         resetInactivityTimeout();
+
+        if (fromUrl) {
+          joinLobby(fromUrl);
+        }
+      });
+
+      newSocket.on("disconnect", (reason) => {
+        console.log("Disconnected by server", reason);
+        disconnect();
       });
 
       newSocket.on("connect_error", (error) => {
@@ -82,8 +111,19 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("error", ({ message }) => {
-        // TODO - notification
         console.log(message);
+        switch (message) {
+          case "Lobby not found":
+            // TODO - notification
+            // router.push("/");
+            break;
+          case "Too many connections from this IP address, please try again later.":
+            // TODO - notification
+            break;
+          default:
+            break;
+        }
+        disconnect();
       });
 
       newSocket.on("joined_lobby", ({ lobbyId }) => {
@@ -121,7 +161,6 @@ export const SocketProvider = ({ children }) => {
         console.log("lobby created", lobbyId);
         setLobbyData(data);
         setIsHost(true);
-        //   router.push(`/${lobbyId}`);
       });
 
       newSocket.on("lobby_full", (reason) => {
@@ -135,13 +174,6 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on("lobby_client_disconnect", ({ player }) => {
         console.log(`${player} disconnected`);
-      });
-
-      newSocket.on("disconnect_reason", (reason) => {
-        // TODO -> Move to notification
-        console.log(reason);
-
-        disconnect();
       });
 
       newSocket.on("client_notFound_guess", ({ word, message }) => {
@@ -161,6 +193,9 @@ export const SocketProvider = ({ children }) => {
     [resetInactivityTimeout]
   );
 
+  /**
+   * Creates a new lobby
+   */
   const createLobby = () => {
     if (socket && isConnected) {
       console.log("...creating lobby");
@@ -168,12 +203,21 @@ export const SocketProvider = ({ children }) => {
     } else console.error("Socket not connected");
   };
 
+  /**
+   * Joins an existing lobby
+   * @param {string} lobbyId - The ID of the lobby to join
+   */
   const joinLobby = (lobbyId) => {
+    console.log("no socket");
     if (socket) {
+      console.log("socket");
       socket.emit("join_lobby", lobbyId);
     } else console.error("Socket not connected");
   };
 
+  /**
+   * Starts the game
+   */
   const startGame = () => {
     console.log("Starting game ... ");
     if (socket) {
@@ -181,20 +225,22 @@ export const SocketProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Disconnects from the server and resets state
+   */
   const disconnect = () => {
-    console.log("disconnecting!");
+    console.log("Disconnecting from server");
     router.push("/");
     setLobbyData({ players: [] });
     setIsConnected(false);
     setIsInLobby(false);
 
     if (socket) {
-      socket.emit("client_disconnect", { lobbyId: lobbyRef.current, socketId: socket.id });
       socket.removeAllListeners();
       socket.disconnect();
       setSocket(null);
       lobbyRef.current = null;
-    } else console.error("Socket not connected");
+    } else console.error("Socket not connected"); // This only occurs when user refreshes in a lobby where they are host
 
     if (inactivityTimeout) {
       console.log("Clearing timout");
@@ -202,14 +248,27 @@ export const SocketProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Handles a player's guess
+   * @param {string} word - The guessed word
+   * @param {string} level - The level of the guess
+   */
   const handleGuess = (word, level) => {
     socket.emit("client_guess", { word, lobbyId: lobbyRef.current, level: level, player: socket.id });
   };
 
+  /**
+   * Changes the game level
+   * @param {string} level - The new level
+   */
   const handleChangeLevel = (level) => {
     socket.emit("lobby_change_level", { lobbyId: lobbyRef.current, level });
   };
 
+  /**
+   * Kicks a player from the lobby
+   * @param {Object} player - The player to kick
+   */
   const kickPlayer = (player) => {
     console.log("Kicking player", { player });
     socket.emit("lobby_kick_player", { socketId: player.socketId });
@@ -271,6 +330,7 @@ export const SocketProvider = ({ children }) => {
  */
 
 /**
+ * Custom hook to access the SocketContext
  * @returns {SocketContextType}
  */
 export const useSocket = () => useContext(SocketContext);

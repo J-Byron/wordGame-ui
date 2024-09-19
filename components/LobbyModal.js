@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useSocket } from "./Socket/SocketContext";
 import PlayerLabel from "./Player/PlayerLabel";
 
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 const LobbyModal = () => {
   const [didCopy, setDidCopy] = useState(false);
   const {
@@ -27,18 +30,26 @@ const LobbyModal = () => {
   }, [isConnected]);
 
   const footerButton = () => {
-    if (isHost) {
-      return (
-        <div>
-          <div className="lobbyModal_startButton" onClick={startGame}>
-            Start
+    if (isInLobby) {
+      if (isHost) {
+        return (
+          <div>
+            <div className="lobbyModal_startButton" onClick={startGame}>
+              Start
+            </div>
           </div>
-        </div>
-      );
+        );
+      } else {
+        return (
+          <div>
+            <div className="lobbyModal_guestButton">Waiting for host ...</div>
+          </div>
+        );
+      }
     } else {
       return (
         <div>
-          <div className="lobbyModal_guestButton">Waiting for host ...</div>
+          <div className="lobbyModal_guestButton">Creating lobby ...</div>
         </div>
       );
     }
@@ -49,57 +60,61 @@ const LobbyModal = () => {
       {/* LobbyId copy */}
       <div className="lobbyModal_lobbyHeader">
         <div>Lobby ID:</div>
-        <div
-          className="lobbyModal_lobbyId"
-          onClick={() => {
-            setDidCopy(true);
-            navigator.clipboard.writeText(lobbyId);
-          }}
-        >
-          {lobbyId}
-        </div>
+        {isInLobby || isInGame ? (
+          <div
+            className="lobbyModal_lobbyId"
+            onClick={() => {
+              setDidCopy(true);
+              navigator.clipboard.writeText(lobbyId);
+            }}
+          >
+            {lobbyId}
+          </div>
+        ) : (
+          <Skeleton
+            count={1}
+            height={41}
+            width={98}
+            baseColor="#b7b7b75e"
+            className="lobbyModal_lobbyId"
+            containerClassName="skeleton_container"
+            duration={0.5}
+          />
+        )}
       </div>
 
       {/* Players */}
       <div className="lobbyModal_body">
-        {players?.length >= 1 && (
-          // <>
-          //   <div className="lobbyModal_body_player">{players[0]?.name}</div>
-          //   <div className="lobbyModal_body_player">{players[1]?.name || "Open slot"}</div>
-          //   <div className="lobbyModal_body_player">{players[2]?.name || "Open slot"}</div>
-          //   <div className="lobbyModal_body_player">{players[3]?.name || "Open slot"}</div>
-          // </>
-          <>
-            <PlayerLabel
-              player={players[0]}
-              isCurrentPlayer={players[0]?.socketId == socket.id}
-              canKick={isHost}
-              handleKick={kickPlayer}
-            />
-            <PlayerLabel
-              player={players[1]}
-              isCurrentPlayer={players[1]?.socketId == socket.id}
-              canKick={isHost}
-              handleKick={kickPlayer}
-            />
-            <PlayerLabel
-              player={players[2]}
-              isCurrentPlayer={players[2]?.socketId == socket.id}
-              canKick={isHost}
-              handleKick={kickPlayer}
-            />
-            <PlayerLabel
-              player={players[3]}
-              isCurrentPlayer={players[3]?.socketId == socket.id}
-              canKick={isHost}
-              handleKick={kickPlayer}
-            />
-          </>
-        )}
+        <>
+          <PlayerLabel
+            player={players[0]}
+            isCurrentPlayer={players[0]?.socketId == socket?.id}
+            canKick={isHost}
+            handleKick={kickPlayer}
+          />
+          <PlayerLabel
+            player={players[1]}
+            isCurrentPlayer={players[1]?.socketId == socket?.id}
+            canKick={isHost}
+            handleKick={kickPlayer}
+          />
+          <PlayerLabel
+            player={players[2]}
+            isCurrentPlayer={players[2]?.socketId == socket?.id}
+            canKick={isHost}
+            handleKick={kickPlayer}
+          />
+          <PlayerLabel
+            player={players[3]}
+            isCurrentPlayer={players[3]?.socketId == socket?.id}
+            canKick={isHost}
+            handleKick={kickPlayer}
+          />
+        </>
       </div>
 
       {/* Navigation ie start, back */}
-      {isInLobby && footerButton()}
+      {!isInGame && footerButton()}
     </div>
   );
 };

@@ -182,6 +182,7 @@ const Main = ({ levels }) => {
     } else if (clickedLevel == level && gameState.completedGames.includes(level)) {
       setShowLevelCompleted(true);
     } else {
+      setRandomLevelToken(null);
       setGameState({ ...gameState, mostRecentLevel: clickedLevel });
     }
 
