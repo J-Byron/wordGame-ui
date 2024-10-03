@@ -62,13 +62,18 @@ const LobbyModal = () => {
         <div>Lobby ID:</div>
         {isInLobby || isInGame ? (
           <div
-            className="lobbyModal_lobbyId"
+            className={`lobbyModal_lobbyId ${didCopy ? "copied" : ""}`}
             onClick={() => {
-              setDidCopy(true);
+              if (!didCopy) {
+                setDidCopy(true);
+                setTimeout(() => {
+                  setDidCopy(false);
+                }, 1500);
+              }
               navigator.clipboard.writeText(lobbyId);
             }}
           >
-            {lobbyId}
+            {didCopy ? "Copied!" : lobbyId}
           </div>
         ) : (
           <Skeleton
@@ -78,7 +83,7 @@ const LobbyModal = () => {
             baseColor="#b7b7b75e"
             className="lobbyModal_lobbyId"
             containerClassName="skeleton_container"
-            duration={0.5}
+            duration={1.5}
           />
         )}
       </div>

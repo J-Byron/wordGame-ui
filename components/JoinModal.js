@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSocket } from "./Socket/SocketContext";
 import { useRouter } from "next/router";
-
+import { useNotification } from "@components/Notification/NotificationContext";
 const JoinModal = () => {
   const [inputValue, setInputValue] = useState("");
   const [isValid, setIsValid] = useState(false);
@@ -14,6 +14,7 @@ const JoinModal = () => {
   } = useSocket();
 
   const router = useRouter();
+  const { addErrorNotification, addSuccessNotification } = useNotification();
 
   useEffect(() => {
     if (!isConnected) {
@@ -36,7 +37,7 @@ const JoinModal = () => {
     if (isValid) {
       joinLobby(inputValue);
     } else {
-      //TODO
+      addErrorNotification("Invalid lobby Id");
       console.log("Invalid lobbyId");
     }
   };
@@ -67,7 +68,7 @@ const JoinModal = () => {
           type="text"
           value={inputValue}
           onChange={handleChange}
-          placeholder={`type lobbyId here ...`}
+          placeholder={`type lobby Id here ...`}
         />
       </form>
       <div className="joinLayout_joinButton" onClick={handleJoinClick}>

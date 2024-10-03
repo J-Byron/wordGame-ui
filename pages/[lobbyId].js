@@ -15,9 +15,10 @@ import { GameAPI } from "api/GameAPI";
 import { HowToPlay } from "@components/HowToPlay";
 
 import { useSocket } from "@components/Socket/SocketContext";
-import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationManager";
+import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationContext";
 import LobbyModal from "@components/LobbyModal";
 import LoadingScreen from "@components/LoadingScreen";
+import GuessNotification from "@components/GuessNotification";
 
 // const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
 const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
@@ -259,17 +260,17 @@ const Main = ({ lobbyId: urlLobbyId }) => {
           </div>
 
           <Input handleSubmit={handleInputSubmit} />
-          {/* {guessNotificationContext.notificationState === "ERROR" ? (
-          <GuessNotification />
-        ) : (
-          games[currentLevel]?.lastGuess && <GuessCell guess={games[currentLevel]?.lastGuess} isHighlighted={true} />
-        )} */}
-          {games[currentLevel]?.lastGuesses[socket.id] && (
-            <GuessCell
-              guess={{ ...games[currentLevel]?.lastGuesses[socket.id], player: socket.id }}
-              isHighlighted={true}
-            />
+          {guessNotificationContext.notificationState === "ERROR" ? (
+            <GuessNotification />
+          ) : (
+            games[currentLevel]?.lastGuesses[socket.id] && (
+              <GuessCell
+                guess={{ ...games[currentLevel]?.lastGuesses[socket.id], player: socket.id }}
+                isHighlighted={true}
+              />
+            )
           )}
+
           {games[currentLevel]?.guesses.length === 0 && <HowToPlay />}
           {games[currentLevel]?.guesses.length !== 0 && (
             <GuessList

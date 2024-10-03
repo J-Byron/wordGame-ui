@@ -162,7 +162,7 @@ body {
   }
 }
 
-.notification {
+.guessNotification {
   text-align: center;
   font-weight: 600;
   height: 22px;
@@ -567,8 +567,18 @@ body {
       padding: 5px 20px;
       background-color: $color-gray;
       margin-left: 16px;
+      width: 105px;
+      text-align: center;
       cursor: pointer;
       user-select: text;
+      transition: background-color 0.1s ease-in;
+      &:hover {
+        background-color: #bfbfbf;
+      }
+
+      &.copied {
+        background-color: $color-green;
+      }
     }
   }
 
@@ -813,6 +823,67 @@ body {
     }
   }
 }
+
+.notificationManager {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.notification {
+  border-radius: 3px;
+  padding: 8px 32px;
+  margin: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  z-index: 1000;
+
+  &.error {
+    background-color: $color-red;
+  }
+  &.success {
+    background-color: $color-green;
+  }
+}
+
+.notificationEnter {
+  opacity: 0;
+}
+
+.notificationEnterActive {
+  opacity: 1;
+  transition: opacity 100ms ease-in-out;
+  animation: modalAnimate 1000ms ease-in-out;
+}
+
+.notificationExit {
+  opacity: 1;
+}
+
+.notificationExitActive {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+@keyframes modalAnimate {
+  0%,
+  100% {
+    transform: translateY(-200%);
+  }
+
+  10%,
+  90% {
+    transform: translateY(5%);
+  }
+
+  15%,
+  85% {
+    transform: translateY(0%);
+  }
+}
+
 @keyframes pulse {
   0% {
     color: rgb(70, 70, 245);

@@ -19,7 +19,7 @@ import { GameAPI } from "api/GameAPI";
 import { RESPONSE_MESSAGE } from "constansts";
 import pluralize from "pluralize";
 
-import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationManager";
+import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationContext";
 import { HowToPlay } from "@components/HowToPlay";
 import { PlayWithFriendsModal } from "@components/PlayWithFriendsModal";
 
@@ -140,8 +140,6 @@ const Main = ({ levels }) => {
         }
         updateGameStateGuesses(res);
       } catch ({ reason, word }) {
-        // * We cannot handle the error in the gameAPI because the notification context is only available in this file.
-        // * Perhaps there is a way to create the game api as a react component? Unlikely
         switch (reason) {
           case RESPONSE_MESSAGE.incorrectGuess:
             guessNotificationContext.error(`I'm sorry, I don't know this word`);

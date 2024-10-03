@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { io } from "socket.io-client";
-
+import { useNotification } from "@components/Notification/NotificationContext";
 const SocketContext = createContext();
 
 const INACTIVITY_TIMEOUT = 600000 / 2; // 10 minutes = 600000 --> 20
@@ -25,14 +25,13 @@ export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [lobbyData, setLobbyData] = useState({ players: [] });
 
-  // const [isManualDisconnect, setIsManualDisconnect] = useState(false);
-  const [isInLobby, setIsInLobby] = useState(false);
   const [inactivityTimeout, setInactivityTimeout] = useState(null);
   const [isHost, setIsHost] = useState(false);
 
   const lobbyRef = useRef(null);
   const router = useRouter();
 
+  const { addSuccessNotification, addErrorNotification } = useNotification();
   /**
    * Resets the inactivity timeout
    */
@@ -110,25 +109,14 @@ export const SocketProvider = ({ children }) => {
         console.error("Connection failed", error);
       });
 
-      newSocket.on("error", ({ message }) => {
+      newSocket.on("error", (message) => {
         console.log(message);
-        switch (message) {
-          case "Lobby not found":
-            // TODO - notification
-            // router.push("/");
-            break;
-          case "Too many connections from this IP address, please try again later.":
-            // TODO - notification
-            break;
-          default:
-            break;
-        }
+        addErrorNotification(message);
         disconnect();
       });
 
       newSocket.on("joined_lobby", ({ lobbyId }) => {
         console.log(`Joined lobby ${lobbyId}`);
-        setIsInLobby(true);
         lobbyRef.current = lobbyId;
         resetInactivityTimeout();
       });
@@ -153,7 +141,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("lobby_disconnect", ({ player }) => {
-        //TODO
+        addErrorNotification(`${player} Left.`);
         console.log(`${player} Left.`); // notifcation
       });
 
@@ -164,25 +152,27 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("lobby_full", (reason) => {
-        //TODO
+        addErrorNotification(reason);
         console.log(reason);
       });
 
       newSocket.on("lobby_client_joined", ({ player }) => {
-        console.log(`${player} joined.`); // notification
+        console.log({ player });
+        addSuccessNotification(`${player} joined.`);
       });
 
       newSocket.on("lobby_client_disconnect", ({ player }) => {
-        console.log(`${player} disconnected`);
+        addErrorNotification(`${player} disconnected.`);
       });
 
-      newSocket.on("client_notFound_guess", ({ word, message }) => {
-        console.log(word, message);
+      newSocket.on("client_notFound_guess", ({ word }) => {
+        addErrorNotification(`"${word}" was not found.`);
+        // console.log(word, message);
       });
 
-      newSocket.on("client_kicked", ({ message }) => {
+      newSocket.on("client_kicked", () => {
+        addErrorNotification("You have been kicked from the lobby");
         disconnect();
-        console.log(message);
       });
 
       // ! We would just be updating lobby_data
@@ -208,9 +198,7 @@ export const SocketProvider = ({ children }) => {
    * @param {string} lobbyId - The ID of the lobby to join
    */
   const joinLobby = (lobbyId) => {
-    console.log("no socket");
     if (socket) {
-      console.log("socket");
       socket.emit("join_lobby", lobbyId);
     } else console.error("Socket not connected");
   };
@@ -233,7 +221,6 @@ export const SocketProvider = ({ children }) => {
     router.push("/");
     setLobbyData({ players: [] });
     setIsConnected(false);
-    setIsInLobby(false);
 
     if (socket) {
       socket.removeAllListeners();

@@ -80,7 +80,10 @@ const Input = ({ handleSubmit }) => {
 
   const handleInputChange = (event) => {
     const value = event.target.value.toLowerCase().replace(/[^a-z]/g, "");
-    setInputValue(value);
+
+    if (value.length <= 20) {
+      setInputValue(value);
+    }
   };
 
   useEffect(() => {

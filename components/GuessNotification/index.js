@@ -1,9 +1,9 @@
-import { useGuessNotificationContext } from "./guessNotificationManager";
+import { useGuessNotificationContext } from "./guessNotificationContext";
 
-const Notification = () => {
+const GuessNotification = () => {
   const { notificationState, notificationText } = useGuessNotificationContext();
 
-  return <div className="notification">{notificationState ? notificationText : " "}</div>;
+  return <div className="guessNotification">{notificationState ? notificationText : " "}</div>;
 };
 
-export default Notification;
+export default GuessNotification;
