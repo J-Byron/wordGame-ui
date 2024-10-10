@@ -20,6 +20,8 @@ import { RESPONSE_MESSAGE } from "constansts";
 import pluralize from "pluralize";
 
 import { useGuessNotificationContext } from "@components/GuessNotification/guessNotificationContext";
+import { useNotification } from "@components/Notification/NotificationContext";
+
 import { HowToPlay } from "@components/HowToPlay";
 import { PlayWithFriendsModal } from "@components/PlayWithFriendsModal";
 
@@ -43,6 +45,7 @@ const Main = ({ levels }) => {
   const [isClosestWordsLoading, setIsClosestWordsLoading] = useState(false);
 
   const guessNotificationContext = useGuessNotificationContext();
+  const { addErrorNotification } = useNotification();
 
   useEffect(() => {
     // Initialize state from localStorage
@@ -136,7 +139,12 @@ const Main = ({ levels }) => {
         if (randomLevelToken) {
           res = await GameAPI.getWordPosForMysteryDate(word, randomLevelToken);
         } else {
-          res = await GameAPI.getWordPosForGame(word, level);
+          try {
+            res = await GameAPI.getWordPosForGame(word, level);
+          } catch (error) {
+            addErrorNotification(error.response.data);
+            return;
+          }
         }
         updateGameStateGuesses(res);
       } catch ({ reason, word }) {

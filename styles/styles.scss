@@ -441,7 +441,7 @@ body {
   position: absolute;
   text-align: center;
   top: -64px;
-  width: 105px;
+  width: 120px;
 }
 
 .howToPlay_container {
@@ -678,7 +678,7 @@ body {
   }
   .playerLabel_you {
     position: absolute;
-    right: -60px;
+    right: -54px;
     margin: 0 7.5px;
     color: $color-blue;
     font-weight: bold;
@@ -687,7 +687,7 @@ body {
   .playerLabel_kick {
     cursor: pointer;
     position: absolute;
-    right: -66px;
+    right: -60px;
     margin: 0 7.5px;
     color: $color-red;
     font-weight: bold;

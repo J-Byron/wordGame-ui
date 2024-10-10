@@ -42,6 +42,7 @@ export const SocketProvider = ({ children }) => {
       }
       const timeout = setTimeout(() => {
         console.log("Disconnected due to inactivity");
+        addErrorNotification("You have been disconnected due to inactivity.");
         disconnect();
       }, INACTIVITY_TIMEOUT);
 
@@ -109,8 +110,7 @@ export const SocketProvider = ({ children }) => {
         console.error("Connection failed", error);
       });
 
-      newSocket.on("error", (message) => {
-        console.log(message);
+      newSocket.on("error", ({ message }) => {
         addErrorNotification(message);
         disconnect();
       });
@@ -227,7 +227,7 @@ export const SocketProvider = ({ children }) => {
       socket.disconnect();
       setSocket(null);
       lobbyRef.current = null;
-    } else console.error("Socket not connected"); // This only occurs when user refreshes in a lobby where they are host
+    }
 
     if (inactivityTimeout) {
       console.log("Clearing timout");

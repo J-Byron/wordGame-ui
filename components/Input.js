@@ -96,8 +96,10 @@ const Input = ({ handleSubmit }) => {
         name="guessForm"
         onSubmit={(e) => {
           e.preventDefault();
-          handleSubmit(inputValue);
-          setInputValue("");
+          if (inputValue.length > 1) {
+            handleSubmit(inputValue);
+            setInputValue("");
+          }
         }}
       >
         <input

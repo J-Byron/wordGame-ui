@@ -20,7 +20,7 @@ import LobbyModal from "@components/LobbyModal";
 import LoadingScreen from "@components/LoadingScreen";
 import GuessNotification from "@components/GuessNotification";
 
-// const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
+const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
 const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
 const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
 const CompletedLevelmodal = dynamic(() => import("@components/CompletedLevelModal"));
@@ -167,10 +167,6 @@ const Main = ({ lobbyId: urlLobbyId }) => {
     setShowClosestWords(false);
   };
 
-  const closePWFModal = () => {
-    setshowPlayers(false);
-  };
-
   const handleNextLevelClick = () => {
     const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
     const highestIncompleteLevel =
@@ -184,9 +180,15 @@ const Main = ({ lobbyId: urlLobbyId }) => {
     setShowClosestWords(true);
     setShowLevelCompleted(false);
     setIsClosestWordsLoading(true);
-    const words = await GameAPI.getTop100ForLevel(level);
+    const words = await GameAPI.getTop100ForLevel(currentLevel);
+
+    const playerWords = words.map((w) => {
+      const found = games[currentLevel]?.guesses.find((g) => g.word === w.word);
+      if (found) console.log("found", found);
+      return found ? { ...w, player: found.player } : w;
+    });
     setIsClosestWordsLoading(false);
-    setClosestWords(words);
+    setClosestWords(playerWords);
   };
 
   if (!isConnected) return null;
@@ -225,14 +227,14 @@ const Main = ({ lobbyId: urlLobbyId }) => {
               isMultiplayer={true}
             />
           )}
-          {/* {showClosestWords && (
-          <ClosestWordList
-            words={closestWords}
-            isLoading={isClosestWordsLoading}
-            handleClose={closeClosestWordsModal}
-            guesses={gameState.games[level].guesses.map(({ word }) => word)}
-          />
-        )} */}
+          {showClosestWords && (
+            <ClosestWordList
+              words={closestWords} // TODO words need to be intersected with player guesses to display player icon in guesscell
+              isLoading={isClosestWordsLoading}
+              handleClose={closeClosestWordsModal}
+              guesses={games[currentLevel]?.guesses.map(({ word }) => word)}
+            />
+          )}
           <div className="header">
             <h1 className="title">{"THE WORD"}</h1>
             <LevelSelectorButton

@@ -9,6 +9,17 @@ const NOTIFICATION_TYPES = {
   ERROR: "error",
 };
 
+/**
+ * @typedef {Object} NotificationContextType
+ * @property {function} addSuccessNotification
+ * @property {function} addErrorNotification
+ */
+
+/**
+ * Custom hook to access the SocketContext
+ * @returns {NotificationContextType}
+ */
+
 export const useNotification = () => {
   return useContext(NotificationContext);
 };

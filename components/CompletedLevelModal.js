@@ -85,10 +85,13 @@ const CompletedLevelModal = ({
             <div className="completedLevelmodal_statsContainer">
               {isMultiplayer ? multiplayerStats() : singlePlayerStats()}
             </div>
-            {isHost && (
+            {(isHost || !isMultiplayer) && (
               <div className="completedLevelmodal_footer">
                 <div className="completedLevelmodal_closeButton" onClick={handleClose}>
                   Close
+                </div>
+                <div className="completedLevelmodal_closeButton" onClick={handleSeeClosestWordsClick}>
+                  see closest words
                 </div>
                 <div className="completedLevelmodal_nextButton" onClick={handleNextClick}>
                   Next

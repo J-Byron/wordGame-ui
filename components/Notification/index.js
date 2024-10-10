@@ -15,7 +15,6 @@ const Notification = ({ message, type, timeout, onRemove }) => {
     };
   }, [timeout]);
 
-  console.log(message);
   return (
     <CSSTransition
       appear

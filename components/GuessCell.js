@@ -17,10 +17,6 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
     lobbyInfo: { players },
   } = useSocket();
 
-  // $color-red: #FF4F79;
-  // $color-green: #12CC91;
-  // $color-yellow: #EDCD1D;
-
   // Function to calculate width percentage based on distance
   const calculateWidthAndColor = () => {
     const maxDistance = 3000;
@@ -54,6 +50,7 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
     toggle(true);
   }, []);
 
+  console.log(guess);
   if (guess.player) {
     return (
       <div className={`guessCell_wrapper ${isHighlighted ? "highlighted" : ""} ${size}`}>
@@ -61,6 +58,7 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
           <PlayerIcon
             iconId={players.filter(({ socketId }) => guess.player == socketId)[0]?.icon}
             color={players.filter(({ socketId }) => guess.player == socketId)[0]?.color}
+            size={size}
           />
         </div>
         <div ref={ref} className={`guessCell_container ${size}`}>

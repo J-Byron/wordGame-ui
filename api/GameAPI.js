@@ -10,7 +10,7 @@ const baseAPI = axios.create({
 });
 
 const errorHandler = (error) => {
-  console.log(error);
+  console.log("error handler ->", error);
   const { status: statusCode } = error?.response;
 
   if (statusCode && statusCode !== 400) {
@@ -61,12 +61,15 @@ export const GameAPI = {
    */
 
   getWordPosForGame: async (word, gameNumber) => {
-    const { data } = await baseAPI.request({
-      url: `/gameNumber/${gameNumber}/word/${word}`,
-      method: "GET",
-    });
-
-    return data;
+    try {
+      const { data } = await baseAPI.request({
+        url: `/gameNumber/${gameNumber}/word/${word}`,
+        method: "GET",
+      });
+      return data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   /**
