@@ -229,7 +229,7 @@ const Main = ({ lobbyId: urlLobbyId }) => {
           )}
           {showClosestWords && (
             <ClosestWordList
-              words={closestWords} // TODO words need to be intersected with player guesses to display player icon in guesscell
+              words={closestWords}
               isLoading={isClosestWordsLoading}
               handleClose={closeClosestWordsModal}
               guesses={games[currentLevel]?.guesses.map(({ word }) => word)}
