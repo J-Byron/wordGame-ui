@@ -1,4 +1,5 @@
 import axios from "axios";
+import process from "node:process";
 
 const RESPONSE_MESSAGE = {
   success: "success",
@@ -11,7 +12,7 @@ const baseAPI = axios.create({
 
 const errorHandler = (error) => {
   console.log("error handler ->", error);
-  const { status: statusCode } = error?.response;
+  const statusCode = error?.response;
 
   if (statusCode && statusCode !== 400) {
     console.error("Uncaught error", error);
@@ -36,7 +37,7 @@ baseAPI.interceptors.response.use(
   },
   (error) => {
     return errorHandler(error);
-  }
+  },
 );
 
 export const GameAPI = {
@@ -119,5 +120,16 @@ export const GameAPI = {
       method: "GET",
     });
     return data;
+  },
+
+  submitResultsForLevel: async (level, guesses) => {
+    await baseAPI.request({
+      url: `/gameNumber/${level}/submitResults`,
+      method: "POST",
+      data: { guesses },
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   },
 };

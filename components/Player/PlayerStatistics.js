@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import useMeasure from "react-use-measure";
-import { useSpring, animated } from "@react-spring/web";
+import { animated, useSpring } from "@react-spring/web";
 import PlayerLabel from "./PlayerLabel";
 
 const PlayerStatistics = ({ player, statistics, isCurrentPlayer }) => {
@@ -57,7 +57,11 @@ const PlayerStatistics = ({ player, statistics, isCurrentPlayer }) => {
   return (
     <div className="playerStats_container">
       <div className="playerStats_header">
-        <PlayerLabel player={player} isCurrentPlayer={isCurrentPlayer} marginBottom={false} />
+        <PlayerLabel
+          player={player}
+          isCurrentPlayer={isCurrentPlayer}
+          marginBottom={false}
+        />
         <div className="playerStats_guesses">{totalGuesses} guess(es)</div>
       </div>
       <div>
@@ -66,7 +70,9 @@ const PlayerStatistics = ({ player, statistics, isCurrentPlayer }) => {
           <div className={`playerStatsCell`}>
             <animated.div className="playerStatsCell_fill" style={greenProps} />
             <span className="playerStatsCell_text">
-              <animated.div className="playerStatsCell_pos">{greenProps.pos.to((x) => x.toFixed(0))}</animated.div>
+              <animated.div className="playerStatsCell_pos">
+                {greenProps.pos.to((x) => x.toFixed(0))}
+              </animated.div>
               &nbsp;{`/ ${totalGuesses}`}
             </span>
           </div>
@@ -74,9 +80,14 @@ const PlayerStatistics = ({ player, statistics, isCurrentPlayer }) => {
         {/* YELLOW */}
         <div ref={yellowRef} className={`playerStatsCell_container`}>
           <div className={`playerStatsCell`}>
-            <animated.div className="playerStatsCell_fill" style={yellowProps} />
+            <animated.div
+              className="playerStatsCell_fill"
+              style={yellowProps}
+            />
             <span className="playerStatsCell_text">
-              <animated.div className="playerStatsCell_pos">{yellowProps.pos.to((x) => x.toFixed(0))}</animated.div>
+              <animated.div className="playerStatsCell_pos">
+                {yellowProps.pos.to((x) => x.toFixed(0))}
+              </animated.div>
               &nbsp;{`/ ${totalGuesses}`}
             </span>
           </div>
@@ -86,7 +97,9 @@ const PlayerStatistics = ({ player, statistics, isCurrentPlayer }) => {
           <div className={`playerStatsCell`}>
             <animated.div className="playerStatsCell_fill" style={redProps} />
             <span className="playerStatsCell_text">
-              <animated.div className="playerStatsCell_pos">{redProps.pos.to((x) => x.toFixed(0))}</animated.div>
+              <animated.div className="playerStatsCell_pos">
+                {redProps.pos.to((x) => x.toFixed(0))}
+              </animated.div>
               &nbsp;{`/ ${totalGuesses}`}
             </span>
           </div>

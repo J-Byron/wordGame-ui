@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSocket } from "./Socket/SocketContext";
 import LobbyModal from "./LobbyModal";
 import JoinModal from "./JoinModal";
@@ -35,7 +35,10 @@ export const PlayWithFriendsModal = ({ handleClose }) => {
       <div className="modal_wrapper">
         <div className="modal_closeButton" />
 
-        <div className="playWithFriendsModal_container" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="playWithFriendsModal_container"
+          onClick={(e) => e.stopPropagation()}
+        >
           {currentLayout === layouts.lobby && <LobbyModal />}
           {currentLayout === layouts.join && <JoinModal />}
 

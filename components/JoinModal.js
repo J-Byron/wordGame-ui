@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSocket } from "./Socket/SocketContext";
 import { useRouter } from "next/router";
 import { useNotification } from "@components/Notification/NotificationContext";
@@ -38,7 +38,6 @@ const JoinModal = () => {
       joinLobby(inputValue);
     } else {
       addErrorNotification("Invalid lobby Id");
-      console.log("Invalid lobbyId");
     }
   };
 
@@ -49,7 +48,7 @@ const JoinModal = () => {
           pathname: `/${lobbyId}`,
           query: { fromLobby: true },
         },
-        `/${lobbyId}`
+        `/${lobbyId}`,
       );
     }
   }, [isInGame]);

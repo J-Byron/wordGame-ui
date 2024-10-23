@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import CountdownModal from "./CountdownModal";
 
 const LevelSelectorModal = ({ levels, handleLevelClick, handleClose }) => {
@@ -16,7 +16,9 @@ const LevelSelectorModal = ({ levels, handleLevelClick, handleClose }) => {
           {[{ level: "?" }, ...levels].map(({ level, isComplete }, index) => {
             return (
               <div
-                className={`levelSelectorModal_cell ${isComplete ? "green" : ""}`}
+                className={`levelSelectorModal_cell ${
+                  isComplete ? "green" : ""
+                }`}
                 onClick={() => {
                   handleLevelClick(level);
                 }}

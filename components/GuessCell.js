@@ -50,7 +50,6 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
     toggle(true);
   }, []);
 
-  console.log(guess);
   if (guess.player) {
     return (
       <div className={`guessCell_wrapper ${isHighlighted ? "highlighted" : ""} ${size}`}>

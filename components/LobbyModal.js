@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSocket } from "./Socket/SocketContext";
 import PlayerLabel from "./Player/PlayerLabel";
 
@@ -60,32 +60,34 @@ const LobbyModal = () => {
       {/* LobbyId copy */}
       <div className="lobbyModal_lobbyHeader">
         <div>Lobby ID:</div>
-        {isInLobby || isInGame ? (
-          <div
-            className={`lobbyModal_lobbyId ${didCopy ? "copied" : ""}`}
-            onClick={() => {
-              if (!didCopy) {
-                setDidCopy(true);
-                setTimeout(() => {
-                  setDidCopy(false);
-                }, 1500);
-              }
-              navigator.clipboard.writeText(lobbyId);
-            }}
-          >
-            {didCopy ? "Copied!" : lobbyId}
-          </div>
-        ) : (
-          <Skeleton
-            count={1}
-            height={41}
-            width={98}
-            baseColor="#b7b7b75e"
-            className="lobbyModal_lobbyId"
-            containerClassName="skeleton_container"
-            duration={1.5}
-          />
-        )}
+        {isInLobby || isInGame
+          ? (
+            <div
+              className={`lobbyModal_lobbyId ${didCopy ? "copied" : ""}`}
+              onClick={() => {
+                if (!didCopy) {
+                  setDidCopy(true);
+                  setTimeout(() => {
+                    setDidCopy(false);
+                  }, 1500);
+                }
+                navigator.clipboard.writeText(lobbyId);
+              }}
+            >
+              {didCopy ? "Copied!" : lobbyId}
+            </div>
+          )
+          : (
+            <Skeleton
+              count={1}
+              height={41}
+              width={98}
+              baseColor="#b7b7b75e"
+              className="lobbyModal_lobbyId"
+              containerClassName="skeleton_container"
+              duration={1.5}
+            />
+          )}
       </div>
 
       {/* Players */}

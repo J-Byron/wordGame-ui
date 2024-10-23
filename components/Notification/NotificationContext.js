@@ -34,7 +34,9 @@ export const NotificationProvider = ({ children }) => {
       message,
       timeout,
     };
-    setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+    setNotifications((
+      prevNotifications,
+    ) => [...prevNotifications, newNotification]);
   };
 
   const addErrorNotification = (message, timeout = 3000) => {
@@ -44,16 +46,25 @@ export const NotificationProvider = ({ children }) => {
       message,
       timeout,
     };
-    setNotifications((prevNotifications) => [...prevNotifications, newNotification]);
+    setNotifications((
+      prevNotifications,
+    ) => [...prevNotifications, newNotification]);
   };
 
   const removeNotification = (id) => {
-    setNotifications((prevNotifications) => prevNotifications.filter((notif) => notif.id !== id));
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notif) => notif.id !== id)
+    );
   };
 
   return (
-    <NotificationContext.Provider value={{ addSuccessNotification, addErrorNotification }}>
-      <NotificationManager notifications={notifications} onRemove={removeNotification} />
+    <NotificationContext.Provider
+      value={{ addSuccessNotification, addErrorNotification }}
+    >
+      <NotificationManager
+        notifications={notifications}
+        onRemove={removeNotification}
+      />
       {children}
     </NotificationContext.Provider>
   );

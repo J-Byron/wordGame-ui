@@ -26,8 +26,18 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-    Helvetica Neue, sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE 10+ */
@@ -158,7 +168,8 @@ body {
   max-width: 400px;
   text-transform: lowercase;
   &:focus {
-    outline: 3px solid $color-blue; /* Change the outline color to blue (#00f) */
+    outline: 3px solid
+      $color-blue; /* Change the outline color to blue (#00f) */
   }
 }
 
@@ -224,7 +235,9 @@ body {
   padding: 16px;
   display: grid;
   grid-template-columns:
-    [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(20% - 0.8rem)
+    [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(
+    20% - 0.8rem
+  )
     [col4] calc(20% - 0.8rem) [col5] calc(20% - 0.8rem);
   grid-gap: 16px;
   max-width: 400px;
@@ -633,7 +646,8 @@ body {
     max-width: 400px;
     text-transform: lowercase;
     &:focus {
-      outline: 3px solid $color-blue; /* Change the outline color to blue (#00f) */
+      outline: 3px solid
+        $color-blue; /* Change the outline color to blue (#00f) */
     }
   }
 

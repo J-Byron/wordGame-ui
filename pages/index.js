@@ -8,7 +8,7 @@
 
 // "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -26,10 +26,18 @@ import { HowToPlay } from "@components/HowToPlay";
 import { PlayWithFriendsModal } from "@components/PlayWithFriendsModal";
 
 const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
-const GuessNotification = dynamic(() => import("@components/GuessNotification"));
-const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
-const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
-const CompletedLevelmodal = dynamic(() => import("@components/CompletedLevelModal"));
+const GuessNotification = dynamic(() =>
+  import("@components/GuessNotification")
+);
+const LevelSelectorButton = dynamic(() =>
+  import("@components/LevelSelectorButton")
+);
+const LevelSelectorModal = dynamic(() =>
+  import("@components/LevelSelectorModal")
+);
+const CompletedLevelmodal = dynamic(() =>
+  import("@components/CompletedLevelModal")
+);
 
 const Main = ({ levels }) => {
   const [gameState, setGameState] = useState({ completedGames: [], games: {} });
@@ -59,15 +67,18 @@ const Main = ({ levels }) => {
       setGameState(storedGameState);
       const { completedGames, mostRecentLevel } = storedGameState;
 
-      const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
+      const incompleteLevels = levels.filter((num) =>
+        !completedGames.includes(num)
+      );
 
-      const highestIncompleteLevel =
-        incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
+      const highestIncompleteLevel = incompleteLevels.length > 0
+        ? Math.max(...incompleteLevels).toString()
+        : Math.max(...levels).toString();
 
       setLevel(
         completedGames.includes(mostRecentLevel) || mostRecentLevel == undefined
           ? highestIncompleteLevel
-          : mostRecentLevel
+          : mostRecentLevel,
       );
     } else {
       setLevel(Math.max(...levels).toString());
@@ -96,16 +107,30 @@ const Main = ({ levels }) => {
 
       return {
         ...gameState,
-        completedGames: [...(gameState.completedGames || []), ...(pos == 0 && level != "?" ? [level] : [])],
+        completedGames: [
+          ...(gameState.completedGames || []),
+          ...(pos == 0 && level != "?" ? [level] : []),
+        ],
         games: {
           ...gameState.games,
           [level]: {
             lastGuess: { ...guess, guesseId: null },
             currentColdStreak: pos > prevGuess?.pos ? prevColdStreak + 1 : 0,
             currentHotStreak: pos < prevGuess?.pos ? prevHotStreak + 1 : 0,
-            longestColdStreak: Math.max(prevColdStreak, gameState.games[level]?.longestColdStreak) || 0,
-            longestHotStreak: Math.max(prevHotStreak, gameState.games[level]?.longestHotStreak) || 0,
-            guesses: [...(gameState.games[level] != undefined ? gameState.games[level]?.guesses : []), guess],
+            longestColdStreak: Math.max(
+              prevColdStreak,
+              gameState.games[level]?.longestColdStreak,
+            ) || 0,
+            longestHotStreak: Math.max(
+              prevHotStreak,
+              gameState.games[level]?.longestHotStreak,
+            ) || 0,
+            guesses: [
+              ...(gameState.games[level] != undefined
+                ? gameState.games[level]?.guesses
+                : []),
+              guess,
+            ],
             correctWord: pos == 0 ? word : gameState.games[level]?.correctWord,
             // if already complete, use complete, otherwise if pos == 0 set complete, otherwise null
             completedGameState: gameState.games[level]?.completedGameState
@@ -119,7 +144,12 @@ const Main = ({ levels }) => {
     });
 
     if (guess.pos == 0) {
-      // TODO need to submit # of guesses to a DB to track level difficulty (1-3)
+      GameAPI.submitResultsForLevel(
+        level,
+        gameState.games[level].guesses.length + 1,
+      );
+      console.log("complete!");
+
       setShowLevelCompleted(true);
     }
   };
@@ -129,10 +159,14 @@ const Main = ({ levels }) => {
 
     // check if word already guessed
     const singularizedWord = pluralize.singular(word);
-    const previouslyGuessed = gameState.games[level]?.guesses.map(({ word }) => word).includes(singularizedWord);
+    const previouslyGuessed = gameState.games[level]?.guesses.map(({ word }) =>
+      word
+    ).includes(singularizedWord);
 
     if (previouslyGuessed) {
-      guessNotificationContext.error(`${singularizedWord} has already been guessed`);
+      guessNotificationContext.error(
+        `${singularizedWord} has already been guessed`,
+      );
     } else {
       try {
         let res;
@@ -185,7 +219,9 @@ const Main = ({ levels }) => {
         ...gameState,
         games: { ...gameState.games, ["?"]: { guesses: [] } },
       });
-    } else if (clickedLevel == level && gameState.completedGames.includes(level)) {
+    } else if (
+      clickedLevel == level && gameState.completedGames.includes(level)
+    ) {
       setShowLevelCompleted(true);
     } else {
       setRandomLevelToken(null);
@@ -200,9 +236,12 @@ const Main = ({ levels }) => {
   const handleNextLevelClick = () => {
     const { completedGames } = gameState;
 
-    const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
-    const highestIncompleteLevel =
-      incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
+    const incompleteLevels = levels.filter((num) =>
+      !completedGames.includes(num)
+    );
+    const highestIncompleteLevel = incompleteLevels.length > 0
+      ? Math.max(...incompleteLevels).toString()
+      : Math.max(...levels).toString();
 
     setShowLevelCompleted(false);
     setLevel(incompleteLevels.length >= 1 ? highestIncompleteLevel : level);
@@ -230,8 +269,12 @@ const Main = ({ levels }) => {
       green: guesses.filter((g) => g.pos < 200).length + 1,
       yellow: guesses.filter((g) => g.pos >= 200 && g.pos < 3000).length,
       red: guesses.filter((g) => g.pos >= 3000).length,
-      longestHotStreak: isNaN(longestHotStreak) ? "N/A" : Math.max(currentHotStreak, longestHotStreak),
-      longestColdStreak: isNaN(longestColdStreak) ? "N/A" : Math.max(currentColdStreak, longestColdStreak),
+      longestHotStreak: isNaN(longestHotStreak)
+        ? "N/A"
+        : Math.max(currentHotStreak, longestHotStreak),
+      longestColdStreak: isNaN(longestColdStreak)
+        ? "N/A"
+        : Math.max(currentColdStreak, longestColdStreak),
       percentile: "Coming Soon",
     };
     return stats;
@@ -294,19 +337,25 @@ const Main = ({ levels }) => {
           />
         )}
 
-        <div className="playWithFriends_button" onClick={() => setShowPWF(true)}>
+        <div
+          className="playWithFriends_button"
+          onClick={() => setShowPWF(true)}
+        >
           Play with friends
         </div>
 
         <Input handleSubmit={handleInputSubmit} />
 
-        {guessNotificationContext.notificationState === "ERROR" ? (
-          <GuessNotification />
-        ) : (
-          gameState.games[level]?.lastGuess && (
-            <GuessCell guess={gameState.games[level]?.lastGuess} isHighlighted={true} />
-          )
-        )}
+        {guessNotificationContext.notificationState === "ERROR"
+          ? <GuessNotification />
+          : (
+            gameState.games[level]?.lastGuess && (
+              <GuessCell
+                guess={gameState.games[level]?.lastGuess}
+                isHighlighted={true}
+              />
+            )
+          )}
 
         {!gameState.games[level]?.guesses.length && <HowToPlay />}
 

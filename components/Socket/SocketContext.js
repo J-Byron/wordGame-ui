@@ -1,5 +1,12 @@
 // socketContext.js
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useRouter } from "next/router";
 import { io } from "socket.io-client";
 import { useNotification } from "@components/Notification/NotificationContext";
@@ -84,12 +91,15 @@ export const SocketProvider = ({ children }) => {
    */
   const startSocket = useCallback(
     (fromUrl = null) => {
-      const newSocket = io(process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL_WSS, {
-        // pingTimeout: 60000,
-        // pingInterval: 25000,
-        "sync disconnect on unload": true,
-        reconnection: false, // Disable automatic reconnection
-      });
+      const newSocket = io(
+        process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL_WSS,
+        {
+          // pingTimeout: 60000,
+          // pingInterval: 25000,
+          "sync disconnect on unload": true,
+          reconnection: false, // Disable automatic reconnection
+        },
+      );
 
       newSocket.on("connect", () => {
         console.log("Connected to server");
@@ -136,7 +146,7 @@ export const SocketProvider = ({ children }) => {
             pathname: `/${lobbyRef.current}`,
             query: { fromLobby: true },
           },
-          `/${lobbyRef.current}`
+          `/${lobbyRef.current}`,
         );
       });
 
@@ -180,7 +190,7 @@ export const SocketProvider = ({ children }) => {
 
       setSocket(newSocket);
     },
-    [resetInactivityTimeout]
+    [resetInactivityTimeout],
   );
 
   /**
@@ -241,7 +251,12 @@ export const SocketProvider = ({ children }) => {
    * @param {string} level - The level of the guess
    */
   const handleGuess = (word, level) => {
-    socket.emit("client_guess", { word, lobbyId: lobbyRef.current, level: level, player: socket.id });
+    socket.emit("client_guess", {
+      word,
+      lobbyId: lobbyRef.current,
+      level: level,
+      player: socket.id,
+    });
   };
 
   /**

@@ -1,6 +1,6 @@
 // "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -21,9 +21,15 @@ import LoadingScreen from "@components/LoadingScreen";
 import GuessNotification from "@components/GuessNotification";
 
 const ClosestWordList = dynamic(() => import("@components/ClosestWordList"));
-const LevelSelectorButton = dynamic(() => import("@components/LevelSelectorButton"));
-const LevelSelectorModal = dynamic(() => import("@components/LevelSelectorModal"));
-const CompletedLevelmodal = dynamic(() => import("@components/CompletedLevelModal"));
+const LevelSelectorButton = dynamic(() =>
+  import("@components/LevelSelectorButton")
+);
+const LevelSelectorModal = dynamic(() =>
+  import("@components/LevelSelectorModal")
+);
+const CompletedLevelmodal = dynamic(() =>
+  import("@components/CompletedLevelModal")
+);
 
 const validateLobbyId = (value) => {
   const regex = /^[A-Za-z0-9]{5}$/;
@@ -98,7 +104,9 @@ const Main = ({ lobbyId: urlLobbyId }) => {
   }, [socket, isConnected]);
 
   useEffect(() => {
-    if (Array.isArray(completedGames) && completedGames.includes(currentLevel)) {
+    if (
+      Array.isArray(completedGames) && completedGames.includes(currentLevel)
+    ) {
       setShowLevelCompleted(true);
     } else {
       setShowLevelCompleted(false);
@@ -118,10 +126,14 @@ const Main = ({ lobbyId: urlLobbyId }) => {
 
     // check if word already guessed
     const singularizedWord = pluralize.singular(word);
-    const previouslyGuessed = games[currentLevel]?.guesses.map(({ word }) => word).includes(singularizedWord);
+    const previouslyGuessed = games[currentLevel]?.guesses.map(({ word }) =>
+      word
+    ).includes(singularizedWord);
 
     if (previouslyGuessed) {
-      guessNotificationContext.error(`${singularizedWord} has already been guessed`);
+      guessNotificationContext.error(
+        `${singularizedWord} has already been guessed`,
+      );
     } else {
       handleGuess(word, currentLevel);
     }
@@ -168,12 +180,17 @@ const Main = ({ lobbyId: urlLobbyId }) => {
   };
 
   const handleNextLevelClick = () => {
-    const incompleteLevels = levels.filter((num) => !completedGames.includes(num));
-    const highestIncompleteLevel =
-      incompleteLevels.length > 0 ? Math.max(...incompleteLevels).toString() : Math.max(...levels).toString();
+    const incompleteLevels = levels.filter((num) =>
+      !completedGames.includes(num)
+    );
+    const highestIncompleteLevel = incompleteLevels.length > 0
+      ? Math.max(...incompleteLevels).toString()
+      : Math.max(...levels).toString();
 
     setShowLevelCompleted(false);
-    handleChangeLevel(incompleteLevels.length >= 1 ? highestIncompleteLevel : level);
+    handleChangeLevel(
+      incompleteLevels.length >= 1 ? highestIncompleteLevel : level,
+    );
   };
 
   const handleSeeClosestWordsClick = async () => {
@@ -207,10 +224,16 @@ const Main = ({ lobbyId: urlLobbyId }) => {
       {isConnected && isInGame && (
         <main>
           {showPlayers && (
-            <div className="playWithFriendsModal_backdrop" onClick={() => setshowPlayers(false)}>
+            <div
+              className="playWithFriendsModal_backdrop"
+              onClick={() => setshowPlayers(false)}
+            >
               <div className="modal_wrapper">
                 <div className="modal_closeButton" />
-                <div className="players_container" onClick={(e) => e.stopPropagation()}>
+                <div
+                  className="players_container"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <LobbyModal />
                 </div>
               </div>
@@ -246,7 +269,10 @@ const Main = ({ lobbyId: urlLobbyId }) => {
           </div>
           {showLevelSelector && (
             <LevelSelectorModal
-              levels={levels.map((l) => ({ level: l, isComplete: completedGames.includes(l) }))}
+              levels={levels.map((l) => ({
+                level: l,
+                isComplete: completedGames.includes(l),
+              }))}
               handleLevelClick={handleLevelClick}
               handleClose={toggleLevelSelectorModal}
             />
@@ -256,28 +282,36 @@ const Main = ({ lobbyId: urlLobbyId }) => {
             <div className="lobbyButtons_leave" onClick={disconnect}>
               Leave
             </div>
-            <div className="lobbyButtons_players" onClick={() => setshowPlayers(true)}>
+            <div
+              className="lobbyButtons_players"
+              onClick={() => setshowPlayers(true)}
+            >
               Players
             </div>
           </div>
 
           <Input handleSubmit={handleInputSubmit} />
-          {guessNotificationContext.notificationState === "ERROR" ? (
-            <GuessNotification />
-          ) : (
-            games[currentLevel]?.lastGuesses[socket.id] && (
-              <GuessCell
-                guess={{ ...games[currentLevel]?.lastGuesses[socket.id], player: socket.id }}
-                isHighlighted={true}
-              />
-            )
-          )}
+          {guessNotificationContext.notificationState === "ERROR"
+            ? <GuessNotification />
+            : (
+              games[currentLevel]?.lastGuesses[socket.id] && (
+                <GuessCell
+                  guess={{
+                    ...games[currentLevel]?.lastGuesses[socket.id],
+                    player: socket.id,
+                  }}
+                  isHighlighted={true}
+                />
+              )
+            )}
 
           {games[currentLevel]?.guesses.length === 0 && <HowToPlay />}
           {games[currentLevel]?.guesses.length !== 0 && (
             <GuessList
               guesses={games[currentLevel]?.guesses || []}
-              highlightedWords={[games[currentLevel]?.lastGuesses[socket.id]?.word]}
+              highlightedWords={[
+                games[currentLevel]?.lastGuesses[socket.id]?.word,
+              ]}
             />
           )}
         </main>
