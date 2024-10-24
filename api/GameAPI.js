@@ -1,5 +1,4 @@
 import axios from "axios";
-import process from "node:process";
 
 const RESPONSE_MESSAGE = {
   success: "success",
@@ -37,7 +36,7 @@ baseAPI.interceptors.response.use(
   },
   (error) => {
     return errorHandler(error);
-  },
+  }
 );
 
 export const GameAPI = {
