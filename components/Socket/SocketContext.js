@@ -1,18 +1,13 @@
 // socketContext.js
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { io } from "socket.io-client";
 import { useNotification } from "@components/Notification/NotificationContext";
 const SocketContext = createContext();
 
 const INACTIVITY_TIMEOUT = 600000 / 2; // 10 minutes = 600000 --> 20
+
+const showLogs = process.env.NEXT_PUBLIC_SHOW_LOGS === "true";
 
 /**
  * @typedef {Object} LobbyData
@@ -48,7 +43,7 @@ export const SocketProvider = ({ children }) => {
         clearTimeout(inactivityTimeout);
       }
       const timeout = setTimeout(() => {
-        console.log("Disconnected due to inactivity");
+        if (showLogs) console.log("Disconnected due to inactivity");
         addErrorNotification("You have been disconnected due to inactivity.");
         disconnect();
       }, INACTIVITY_TIMEOUT);
@@ -91,18 +86,15 @@ export const SocketProvider = ({ children }) => {
    */
   const startSocket = useCallback(
     (fromUrl = null) => {
-      const newSocket = io(
-        process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL_WSS,
-        {
-          // pingTimeout: 60000,
-          // pingInterval: 25000,
-          "sync disconnect on unload": true,
-          reconnection: false, // Disable automatic reconnection
-        },
-      );
+      const newSocket = io(process.env.NEXT_PUBLIC_GOOGLE_APP_ENGINE_BASE_URL_WSS, {
+        // pingTimeout: 60000,
+        // pingInterval: 25000,
+        "sync disconnect on unload": true,
+        reconnection: false, // Disable automatic reconnection
+      });
 
       newSocket.on("connect", () => {
-        console.log("Connected to server");
+        if (showLogs) console.log("Connected to server");
         setIsConnected(true);
         resetInactivityTimeout();
 
@@ -112,7 +104,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("disconnect", (reason) => {
-        console.log("Disconnected by server", reason);
+        if (showLogs) console.log("Disconnected by server", reason);
         disconnect();
       });
 
@@ -126,7 +118,7 @@ export const SocketProvider = ({ children }) => {
       });
 
       newSocket.on("joined_lobby", ({ lobbyId }) => {
-        console.log(`Joined lobby ${lobbyId}`);
+        if (showLogs) console.log(`Joined lobby ${lobbyId}`);
         lobbyRef.current = lobbyId;
         resetInactivityTimeout();
       });
@@ -135,39 +127,39 @@ export const SocketProvider = ({ children }) => {
         // resetInactivityTimeout();
         const { isHost } = data.players.find((p) => p.socketId == newSocket.id);
         setIsHost(isHost);
-        console.log(data);
+        if (showLogs) console.log(data);
         setLobbyData({ ...data });
       });
 
       newSocket.on("lobby_start_game", () => {
-        console.log("Game started!");
+        if (showLogs) console.log("Game started!");
         router.push(
           {
             pathname: `/${lobbyRef.current}`,
             query: { fromLobby: true },
           },
-          `/${lobbyRef.current}`,
+          `/${lobbyRef.current}`
         );
       });
 
       newSocket.on("lobby_disconnect", ({ player }) => {
         addErrorNotification(`${player} Left.`);
-        console.log(`${player} Left.`); // notifcation
+        if (showLogs) console.log(`${player} Left.`); // notifcation
       });
 
       newSocket.on("lobby_created", ({ lobbyId, data }) => {
-        console.log("lobby created", lobbyId);
+        if (showLogs) console.log("lobby created", lobbyId);
         setLobbyData(data);
         setIsHost(true);
       });
 
       newSocket.on("lobby_full", (reason) => {
         addErrorNotification(reason);
-        console.log(reason);
+        if (showLogs) console.log(reason);
       });
 
       newSocket.on("lobby_client_joined", ({ player }) => {
-        console.log({ player });
+        if (showLogs) console.log({ player });
         addSuccessNotification(`${player} joined.`);
       });
 
@@ -177,7 +169,7 @@ export const SocketProvider = ({ children }) => {
 
       newSocket.on("client_notFound_guess", ({ word }) => {
         addErrorNotification(`"${word}" was not found.`);
-        // console.log(word, message);
+        // if(showLogs) console.log(word, message);
       });
 
       newSocket.on("client_kicked", () => {
@@ -190,7 +182,7 @@ export const SocketProvider = ({ children }) => {
 
       setSocket(newSocket);
     },
-    [resetInactivityTimeout],
+    [resetInactivityTimeout]
   );
 
   /**
@@ -198,7 +190,7 @@ export const SocketProvider = ({ children }) => {
    */
   const createLobby = () => {
     if (socket && isConnected) {
-      console.log("...creating lobby");
+      if (showLogs) console.log("...creating lobby");
       socket.emit("create_lobby", { lobbyId: lobbyRef.current });
     } else console.error("Socket not connected");
   };
@@ -217,7 +209,7 @@ export const SocketProvider = ({ children }) => {
    * Starts the game
    */
   const startGame = () => {
-    console.log("Starting game ... ");
+    if (showLogs) console.log("Starting game ... ");
     if (socket) {
       socket.emit("start_game", { lobbyId: lobbyRef.current });
     }
@@ -227,7 +219,7 @@ export const SocketProvider = ({ children }) => {
    * Disconnects from the server and resets state
    */
   const disconnect = () => {
-    console.log("Disconnecting from server");
+    if (showLogs) console.log("Disconnecting from server");
     router.push("/");
     setLobbyData({ players: [] });
     setIsConnected(false);
@@ -240,7 +232,7 @@ export const SocketProvider = ({ children }) => {
     }
 
     if (inactivityTimeout) {
-      console.log("Clearing timout");
+      if (showLogs) console.log("Clearing timout");
       clearTimeout(inactivityTimeout);
     }
   };
@@ -272,7 +264,7 @@ export const SocketProvider = ({ children }) => {
    * @param {Object} player - The player to kick
    */
   const kickPlayer = (player) => {
-    console.log("Kicking player", { player });
+    if (showLogs) console.log("Kicking player", { player });
     socket.emit("lobby_kick_player", { socketId: player.socketId });
   };
 
