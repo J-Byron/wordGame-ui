@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Input = ({ handleSubmit }) => {
   const [inputValue, setInputValue] = useState("");
-  const [isClient, setIsClient] = useState(false); // run dynamic unpredictable code on client only
+  const [placeholder, setPlaceholder] = useState("banana");
+
   const getRandomWord = () => {
     const words = [
       "apple",
@@ -77,24 +78,28 @@ const Input = ({ handleSubmit }) => {
     return word;
   };
 
-  let randomWord = getRandomWord();
-
   const handleInputChange = (event) => {
     const value = event.target.value.toLowerCase().replace(/[^a-z]/g, "");
-    setInputValue(value);
+
+    if (value.length <= 20) {
+      setInputValue(value);
+    }
   };
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    setPlaceholder(getRandomWord());
+  }, [inputValue]);
 
   return (
     <div className="guessForm_container">
       <form
+        name="guessForm"
         onSubmit={(e) => {
           e.preventDefault();
-          handleSubmit(inputValue);
-          setInputValue("");
+          if (inputValue.length > 1) {
+            handleSubmit(inputValue);
+            setInputValue("");
+          }
         }}
       >
         <input
@@ -102,7 +107,7 @@ const Input = ({ handleSubmit }) => {
           type="text"
           value={inputValue}
           onChange={handleInputChange}
-          placeholder={`type a word like '${isClient ? randomWord : "banana"}'`}
+          placeholder={`type a word like '${placeholder}'`}
         />
       </form>
     </div>

@@ -15,18 +15,24 @@ const ClosestWordList = ({ words, handleClose, isLoading, guesses }) => {
             e.stopPropagation();
           }}
         >
-          {isLoading ? (
-            <Skeleton
-              count={17}
-              height={27}
-              baseColor="#b7b7b75e"
-              className="skeleton"
-              containerClassName="skeleton_container"
-              duration={0.5}
-            />
-          ) : (
-            <GuessList guesses={words} highlightedWords={guesses} size="sm" />
-          )}
+          {isLoading
+            ? (
+              <Skeleton
+                count={17}
+                height={27}
+                baseColor="#b7b7b75e"
+                className="skeleton"
+                containerClassName="skeleton_container"
+                duration={0.5}
+              />
+            )
+            : (
+              <GuessList
+                guesses={words}
+                highlightedWords={guesses}
+                size="sm"
+              />
+            )}
         </div>
       </div>
     </div>

@@ -1,9 +1,9 @@
 import GuessCell from "./GuessCell";
 
-const GuessList = ({ guesses = [], highlightedWords, size = "md" }) => {
+const GuessList = ({ guesses = [], highlightedWords = [], size = "md" }) => {
   return (
     <div className={`guessList ${size}`}>
-      {guesses.length > 0 &&
+      {guesses.length &&
         guesses
           .sort((a, b) => a.pos - b.pos)
           .map((guess) => (

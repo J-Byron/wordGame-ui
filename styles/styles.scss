@@ -26,8 +26,18 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans,
-    Helvetica Neue, sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE 10+ */
@@ -37,10 +47,11 @@ body {
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
 }
 
 main {
-  padding-top: 15px;
+  padding-top: 16px;
   display: flex;
   flex-direction: column;
   max-width: 400px;
@@ -74,8 +85,12 @@ body {
   margin: 0px;
 }
 
+.marginBottom {
+  margin-bottom: 16px;
+}
+
 .guessList {
-  margin: 15px 0;
+  margin: 16px 0;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -97,7 +112,7 @@ body {
   background-color: $color-gray-opaque;
   width: inherit;
   border-radius: 3px;
-  margin: 0.25rem 15px;
+  margin: 0.25rem 16px;
   font-weight: 600;
   position: relative;
   overflow: hidden;
@@ -130,7 +145,7 @@ body {
 }
 
 .guessForm_container {
-  margin: 0 15px;
+  margin: 0 16px;
 }
 
 *::placeholder {
@@ -148,16 +163,17 @@ body {
   border-radius: 3px;
   border: 0px;
   padding: 0px;
-  margin: 15px 0;
+  margin: 16px 0;
   width: 100%;
   max-width: 400px;
   text-transform: lowercase;
   &:focus {
-    outline: 3px solid $color-blue; /* Change the outline color to blue (#00f) */
+    outline: 3px solid
+      $color-blue; /* Change the outline color to blue (#00f) */
   }
 }
 
-.notification {
+.guessNotification {
   text-align: center;
   font-weight: 600;
   height: 22px;
@@ -216,12 +232,14 @@ body {
 
 .levelSelectorModal_container {
   background-color: $color-bone;
-  padding: 15px;
+  padding: 16px;
   display: grid;
   grid-template-columns:
-    [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(20% - 0.8rem)
+    [col1] calc(20% - 0.8rem) [col2] calc(20% - 0.8rem) [col3] calc(
+    20% - 0.8rem
+  )
     [col4] calc(20% - 0.8rem) [col5] calc(20% - 0.8rem);
-  grid-gap: 15px;
+  grid-gap: 16px;
   max-width: 400px;
   max-height: 400px;
   overflow-y: scroll;
@@ -303,7 +321,7 @@ body {
   width: 100%;
   max-width: 400px;
   border-radius: 3px;
-  padding: 15px 0;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -319,10 +337,17 @@ body {
     background-color: $color-blue;
     width: 100%;
     color: $color-bone;
-    margin-bottom: 0.5rem;
+    margin-bottom: 16px;
+    border-top: 3px solid $color-black;
+    border-bottom: 3px solid $color-black;
+    font-size: 20px;
+    font-weight: 600;
   }
 
   .completedLevelmodal_statsContainer {
+    max-height: 450px;
+    overflow: hidden;
+    overflow-y: scroll;
     margin-bottom: 2rem;
     .completedLevelmodal_colors {
       display: flex;
@@ -330,12 +355,13 @@ body {
       color: $color-black;
       font-size: 18px;
       font-weight: 700;
-      margin: 15px;
+      margin: 16px;
       > * {
         text-align: center;
         margin: 0.5rem;
-        padding: 15px;
+        padding: 16px;
         border-radius: 3px;
+        width: 20%;
       }
       > :nth-child(1) {
         // green;
@@ -353,6 +379,12 @@ body {
 
     .completedLevelmodal_closest {
       cursor: pointer;
+    }
+
+    .completedLevelmodal_player {
+      margin: 16px;
+      padding: 16px;
+      border-radius: 3px;
     }
   }
 
@@ -399,13 +431,13 @@ body {
   }
 }
 .skeleton_container {
-  margin: 15px 0;
+  margin: 16px 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 
   .skeleton {
-    margin: 0.25rem 15px;
+    margin: 0.25rem 16px;
   }
 
   br {
@@ -414,34 +446,36 @@ body {
 }
 
 .countdown {
-  position: absolute;
-  top: -60px;
   background-color: $color-bone;
-  padding: 15px;
   border-radius: 3px;
-  font-weight: 600;
   border: 3px solid $color-black;
+  font-weight: 600;
+  padding: 12px;
+  position: absolute;
+  text-align: center;
+  top: -64px;
+  width: 120px;
 }
 
 .howToPlay_container {
   text-align: center;
-  margin: 15px 15px 0 15px;
+  margin: 0px 16px 0 16px;
   background-color: white;
   border: 3px solid $color-black;
   border-radius: 3px;
-  padding: 15px 15px 0 15px;
+  padding: 16px 16px 0 16px;
   .header {
     font-size: 24px;
     font-weight: 700;
     // text-decoration: underline;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
   }
 
   .howToPlay_step {
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
-    padding: 15px;
+    margin-bottom: 16px;
+    padding: 16px;
     border-radius: 3px;
     background-color: $color-bone;
 
@@ -482,7 +516,6 @@ body {
     max-width: 400px;
     background-color: $color-bone;
     overflow: hidden;
-    overflow-y: scroll;
     scrollbar-width: thin;
     display: flex;
     justify-content: center;
@@ -526,50 +559,67 @@ body {
   background-color: $color-purple;
   border-radius: 3px;
   text-align: center;
-  margin: 15px 15px 0 15px;
+  margin: 16px 16px 0 16px;
 }
 
-.hostLayout_container {
+.lobbyModal_container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 400px;
 
-  .hostLayout_lobbyHeader {
+  .lobbyModal_lobbyHeader {
     display: flex;
     justify-content: center;
     align-items: center;
-    .hostLayout_lobbyId {
+    .lobbyModal_lobbyId {
       font-weight: 600;
       font-size: 20px;
       border-radius: 3px;
       padding: 5px 20px;
       background-color: $color-gray;
-      margin-left: 15px;
+      margin-left: 16px;
+      width: 105px;
+      text-align: center;
       cursor: pointer;
       user-select: text;
-    }
-    .hostLayout_lobbyId_button {
+      transition: background-color 0.1s ease-in;
+      &:hover {
+        background-color: #bfbfbf;
+      }
+
+      &.copied {
+        background-color: $color-green;
+      }
     }
   }
 
-  .hostLayout_body {
-    margin: 30px 0;
+  .lobbyModal_body {
+    margin: 32px 0 16px 0;
     text-align: center;
+    font-weight: 600;
+    min-width: 150px;
 
-    .hostLayout_body_player {
+    .lobbyModal_body_player {
       margin-top: 5px;
     }
   }
-  .hostLayout_footer {
-  }
 
-  .hostLayout_startButton {
+  .lobbyModal_startButton {
     cursor: pointer;
     font-size: 22px;
     color: $color-bone;
     padding: 2px 30px;
     background-color: $color-blue;
+    border-radius: 3px;
+  }
+
+  .lobbyModal_guestButton {
+    font-size: 22px;
+    color: $color-black;
+    padding: 2px 30px;
+    background-color: $color-gray;
     border-radius: 3px;
   }
 }
@@ -591,12 +641,13 @@ body {
     border-radius: 3px;
     border: 0px;
     padding: 0px;
-    margin: 15px 0;
+    margin: 16px 0;
     width: 100%;
     max-width: 400px;
     text-transform: lowercase;
     &:focus {
-      outline: 3px solid $color-blue; /* Change the outline color to blue (#00f) */
+      outline: 3px solid
+        $color-blue; /* Change the outline color to blue (#00f) */
     }
   }
 
@@ -607,6 +658,243 @@ body {
     padding: 2px 30px;
     background-color: $color-blue;
     border-radius: 3px;
+  }
+}
+
+// <div className="playerLabel_container_notEmpty">
+//       <div className="playerLabel_icon">
+//         <PlayerIcon iconId={player.icon} color={player.color} />
+//       </div>
+//       <div className="playerLabel_name">{player.name}</div>
+//       {isCurrentPlayer && <div className="playerLabel_you">You</div>}
+//     </div>
+
+.playerLabel_container_empty {
+  margin-bottom: 16px;
+  padding: 7.5px;
+  background-color: white;
+  border-radius: 3px;
+  color: #696969;
+}
+.playerLabel_container_notEmpty {
+  display: flex;
+  border-radius: 3px;
+  padding: 7.5px;
+  align-items: center;
+  background-color: white;
+  position: relative;
+  .playerLabel_icon {
+    margin: 0 7.5px;
+    height: 20px;
+  }
+  .playerLabel_name {
+    margin: 0 7.5px;
+  }
+  .playerLabel_you {
+    position: absolute;
+    right: -54px;
+    margin: 0 7.5px;
+    color: $color-blue;
+    font-weight: bold;
+  }
+
+  .playerLabel_kick {
+    cursor: pointer;
+    position: absolute;
+    right: -60px;
+    margin: 0 7.5px;
+    color: $color-red;
+    font-weight: bold;
+  }
+}
+
+.guessCell_wrapper {
+  background-color: white;
+  width: inherit;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  display: flex;
+  margin: 0.25rem 16px;
+  align-items: center;
+
+  &.highlighted {
+    border: 3px solid #484848;
+
+    .guessCell {
+      font-weight: 700;
+    }
+  }
+
+  .guessCell_container {
+    width: 100%;
+    border-radius: 0px;
+    margin: 0;
+    background-color: $color-gray-opaque;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+}
+.guessCell_playerIcon {
+  margin: 0 7.5px;
+  height: 20px;
+  width: 20px;
+  // z-index: 50;
+}
+
+.lobbyButtons_container {
+  display: flex;
+  .lobbyButtons_leave {
+    flex-grow: 1;
+    cursor: pointer;
+    font-weight: bold;
+    color: $color-bone;
+    padding: 2px;
+    background-color: $color-red;
+    border-radius: 3px;
+    text-align: center;
+    margin: 16px 16px 0 16px;
+  }
+  .lobbyButtons_players {
+    flex-grow: 8;
+    cursor: pointer;
+    font-weight: bold;
+    color: $color-bone;
+    padding: 2px;
+    background-color: $color-purple;
+    border-radius: 3px;
+    text-align: center;
+    margin: 16px 16px 0 0px;
+  }
+}
+
+.players_container {
+  border: 3px solid $color-black;
+  border-radius: 3px;
+  width: 100%;
+  max-width: 400px;
+  background-color: $color-bone;
+  overflow: hidden;
+  scrollbar-width: thin;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 30px 0px;
+  font-size: 18px;
+}
+
+.playerStats_container {
+  padding: 16px;
+  * {
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .playerStats_header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    .playerStats_guesses {
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      // background-color: $color-blue;
+      font-weight: 600;
+    }
+  }
+}
+.playerStatsCell_container {
+  background-color: $color-gray-opaque;
+  width: inherit;
+  border-radius: 3px;
+  margin: 0.25rem 0;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  .playerStatsCell {
+    padding: 0 0.5rem;
+    display: flex;
+    justify-content: center;
+    user-select: all;
+    height: 20px;
+    .playerStatsCell_text {
+      font-size: 12px;
+      display: flex;
+    }
+    .playerStatsCell_fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  }
+}
+
+.notificationManager {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.notification {
+  border-radius: 3px;
+  padding: 8px 32px;
+  margin: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  z-index: 1000;
+
+  &.error {
+    background-color: $color-red;
+  }
+  &.success {
+    background-color: $color-green;
+  }
+}
+
+.notificationEnter {
+  opacity: 0;
+}
+
+.notificationEnterActive {
+  opacity: 1;
+  transition: opacity 100ms ease-in-out;
+  animation: modalAnimate 1000ms ease-in-out;
+}
+
+.notificationExit {
+  opacity: 1;
+}
+
+.notificationExitActive {
+  opacity: 0;
+  transition: opacity 300ms ease-in-out;
+}
+
+@keyframes modalAnimate {
+  0%,
+  100% {
+    transform: translateY(-200%);
+  }
+
+  10%,
+  90% {
+    transform: translateY(5%);
+  }
+
+  15%,
+  85% {
+    transform: translateY(0%);
   }
 }
 

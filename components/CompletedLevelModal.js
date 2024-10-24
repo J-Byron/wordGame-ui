@@ -1,15 +1,23 @@
 import { useEffect, useState } from "react";
 import Confetti from "./Confetti";
+import { useSocket } from "./Socket/SocketContext";
+import PlayerLabel from "./Player/PlayerLabel";
+import PlayerStatistics from "./Player/PlayerStatistics";
 
 const CompletedLevelModal = ({
   level,
-  handleCloseClick,
+  handleClose,
   handleNextClick,
   handleSeeClosestWordsClick,
   correctWord = null,
   stats,
+  isMultiplayer = false,
 }) => {
   const [showConfetti, setShowConfetti] = useState(false);
+  const {
+    socket,
+    lobbyInfo: { players, isHost },
+  } = useSocket();
 
   const toggleConfetti = () => setShowConfetti(!showConfetti);
 
@@ -21,10 +29,60 @@ const CompletedLevelModal = ({
     toggleConfetti();
   }, [level]);
 
-  const { guesses, green, yellow, red, longestColdStreak, longestHotStreak, percentile } = stats;
+  // Works for singleplayer but not multiplayer
+
+  const singlePlayerStats = () => {
+    const {
+      guesses,
+      green,
+      yellow,
+      red,
+      longestColdStreak,
+      longestHotStreak,
+      percentile,
+    } = stats;
+    return (
+      <>
+        <div>
+          total guesses: <span className="bold">{guesses}</span>
+        </div>
+        <div className="completedLevelmodal_colors">
+          <div>{green}</div>
+          <div>{yellow}</div>
+          <div>{red}</div>
+        </div>
+        <div>
+          best hot streak : 🔥 <span className="bold">{longestHotStreak}</span>
+        </div>
+        <div>
+          worst cold streak : ❄️{" "}
+          <span className="bold">{longestColdStreak}</span>
+        </div>
+        <div>
+          percentile: <span className="bold">{percentile}</span>
+        </div>
+      </>
+    );
+  };
+  const multiplayerStats = () => {
+    return players.map((player) => {
+      return (
+        <PlayerStatistics
+          key={player.socketId}
+          statistics={stats[player.socketId]}
+          player={player}
+          isCurrentPlayer={socket.id === player.socketId}
+        />
+      );
+    });
+  };
+
   return (
     <div>
-      <div className="completedLevelmodal_backdrop" onClick={() => handleCloseClick()}>
+      <div
+        className="completedLevelmodal_backdrop"
+        onClick={() => handleClose()}
+      >
         <Confetti toggle={showConfetti} />
         <div className="modal_wrapper">
           <div className="modal_closeButton" />
@@ -34,40 +92,35 @@ const CompletedLevelModal = ({
               e.stopPropagation();
             }}
           >
-            <span className="completedLevelmodal_title">You completed level {level}!</span>
+            <span className="completedLevelmodal_title">
+              You completed level {level}!
+            </span>
             <div className="completedLevelmodal_word">{correctWord}</div>
             <div className="completedLevelmodal_statsContainer">
-              {/* <span>stats</span> */}
-              {/* Line, total guesses, green, yellow, red, longest streak, share  */}
-              <div>
-                total guesses: <span className="bold">{guesses}</span>
-              </div>
-              <div className="completedLevelmodal_colors">
-                <div>{green}</div>
-                <div>{yellow}</div>
-                <div>{red}</div>
-              </div>
-              <div>
-                best hot streak : 🔥 <span className="bold">{longestHotStreak}</span>
-              </div>
-              <div>
-                worst cold streak : ❄️ <span className="bold">{longestColdStreak}</span>
-              </div>
-              <div>
-                percentile: <span className="bold">{percentile}</span>
-              </div>
-              <span className="completedLevelmodal_closest" onClick={handleSeeClosestWordsClick}>
-                see closest words
-              </span>
+              {isMultiplayer ? multiplayerStats() : singlePlayerStats()}
             </div>
-            <div className="completedLevelmodal_footer">
-              <div className="completedLevelmodal_closeButton" onClick={handleCloseClick}>
-                Close
+            {(isHost || !isMultiplayer) && (
+              <div className="completedLevelmodal_footer">
+                <div
+                  className="completedLevelmodal_closeButton"
+                  onClick={handleClose}
+                >
+                  Close
+                </div>
+                <div
+                  className="completedLevelmodal_closeButton"
+                  onClick={handleSeeClosestWordsClick}
+                >
+                  see closest words
+                </div>
+                <div
+                  className="completedLevelmodal_nextButton"
+                  onClick={handleNextClick}
+                >
+                  Next
+                </div>
               </div>
-              <div className="completedLevelmodal_nextButton" onClick={handleNextClick}>
-                Next
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

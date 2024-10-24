@@ -1,19 +1,21 @@
 import { useState, useEffect } from "react";
 import useMeasure from "react-use-measure";
 import { useSpring, animated } from "@react-spring/web";
+import PlayerIcon from "./Player/PlayerIcon";
+import { useSocket } from "./Socket/SocketContext";
 
 const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
   if (guess == null) return null;
 
-  // console.log(guess.word, isHighlighted);
   const { word, pos } = guess;
 
   const [didMount, toggle] = useState(false);
   const [ref, { width }] = useMeasure();
 
-  //   $color-red: #FF4F79;
-  // $color-green: #12CC91;
-  // $color-yellow: #EDCD1D;
+  const {
+    socket,
+    lobbyInfo: { players },
+  } = useSocket();
 
   // Function to calculate width percentage based on distance
   const calculateWidthAndColor = () => {
@@ -48,14 +50,37 @@ const GuessCell = ({ guess, isHighlighted = false, size = "md" }) => {
     toggle(true);
   }, []);
 
+  if (guess.player) {
+    return (
+      <div className={`guessCell_wrapper ${isHighlighted ? "highlighted" : ""} ${size}`}>
+        <div className="guessCell_playerIcon">
+          <PlayerIcon
+            iconId={players.filter(({ socketId }) => guess.player == socketId)[0]?.icon}
+            color={players.filter(({ socketId }) => guess.player == socketId)[0]?.color}
+            size={size}
+          />
+        </div>
+        <div ref={ref} className={`guessCell_container ${size}`}>
+          <div className={`guessCell ${size}`}>
+            <span className="guessCell_word">{word}</span>
+
+            {/* Loader */}
+            <animated.div className="guessCell_fill" style={props} />
+
+            {/* Pos counter */}
+            <animated.div>{props.pos.to((x) => x.toFixed(0))}</animated.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={ref} className={`guessCell_container ${isHighlighted ? "highlighted" : ""} ${size}`}>
       <div className={`guessCell ${size}`}>
         <span className="guessCell_word">{word}</span>
-
         {/* Loader */}
         <animated.div className="guessCell_fill" style={props} />
-
         {/* Pos counter */}
         <animated.div className="guessCell_pos">{props.pos.to((x) => x.toFixed(0))}</animated.div>
       </div>
