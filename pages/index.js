@@ -140,21 +140,17 @@ const Main = ({ levels }) => {
         if (randomLevelToken) {
           res = await GameAPI.getWordPosForMysteryDate(word, randomLevelToken);
         } else {
-          try {
-            res = await GameAPI.getWordPosForGame(word, level);
-          } catch (error) {
-            addErrorNotification(error.response.data);
-            return;
-          }
+          res = await GameAPI.getWordPosForGame(word, level);
+          updateGameStateGuesses(res);
         }
-        updateGameStateGuesses(res);
       } catch ({ reason, word }) {
+        console.log(reason);
         switch (reason) {
           case RESPONSE_MESSAGE.incorrectGuess:
             guessNotificationContext.error(`I'm sorry, I don't know this word`);
             break;
           default:
-            guessNotificationContext.error(`Error occurred`);
+            guessNotificationContext.error(`An error occurred`);
         }
       }
     }
