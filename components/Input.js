@@ -107,6 +107,7 @@ const Input = ({ handleSubmit }) => {
           type="text"
           value={inputValue}
           onChange={handleInputChange}
+          enterKeyHint="send"
           placeholder={`type a word like '${placeholder}'`}
         />
       </form>
